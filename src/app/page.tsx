@@ -127,7 +127,7 @@ export default function Home() {
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text">Recent Activity</h2>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              What I'm currently working on and sharing with the developer community
+              What I&apos;m currently working on and sharing with the developer community
             </p>
           </div>
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
@@ -162,7 +162,7 @@ export default function Home() {
                   </div>
                   <div>
                     <CardTitle className="text-xl">Current Focus</CardTitle>
-                    <CardDescription className="text-primary font-medium">What I'm working on</CardDescription>
+                    <CardDescription className="text-primary font-medium">What I&apos;m working on</CardDescription>
                   </div>
                 </div>
               </CardHeader>

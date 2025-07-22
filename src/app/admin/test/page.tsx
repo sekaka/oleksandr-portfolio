@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AuthGuard } from '@/components/admin/AuthGuard';
 
 export default function TestPage() {
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<{ error?: string; message?: string; article?: unknown } | null>(null);
   const [loading, setLoading] = useState(false);
 
   const testArticleCreation = async () => {

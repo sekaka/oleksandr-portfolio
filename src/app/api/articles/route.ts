@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
     // Transform the data to match our Article type
     const transformedArticles = articles?.map(article => ({
       ...article,
-      categories: article.categories?.map((ac: any) => ac.category) || []
+      categories: article.categories?.map((ac: { category: unknown }) => ac.category) || []
     })) || [];
 
     return NextResponse.json(transformedArticles);

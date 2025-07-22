@@ -80,7 +80,7 @@ export default function AboutPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground leading-relaxed">
-                    I believe in choosing the right tool for the job. Whether it's Vue.js for reactive UIs, 
+                    I believe in choosing the right tool for the job. Whether it&apos;s Vue.js for reactive UIs, 
                     React for component ecosystems, or Angular for enterprise applications - the framework serves the solution.
                   </p>
                 </CardContent>
@@ -165,7 +165,7 @@ export default function AboutPage() {
                 Current Focus
               </h2>
               <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                What I'm working on today and where I'm heading next
+                What I&apos;m working on today and where I&apos;m heading next
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">

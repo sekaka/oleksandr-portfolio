@@ -43,7 +43,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     // Transform the data
     const transformedArticle = {
       ...article,
-      categories: article.categories?.map((ac: any) => ac.category) || [],
+      categories: article.categories?.map((ac: { category: unknown }) => ac.category) || [],
       view_count: (article.view_count || 0) + 1
     };
 

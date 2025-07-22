@@ -2,14 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseAdmin } from '@/lib/supabase-server';
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 // GET /api/articles/[id] - Get single article by ID
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
+    const { id } = await params;
     const supabase = createSupabaseAdmin();
 
     const { data: article, error } = await supabase
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           category:categories(*)
         )
       `)
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (error) {
@@ -34,7 +35,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     // Transform the data
     const transformedArticle = {
       ...article,
-      categories: article.categories?.map((ac: any) => ac.category) || []
+      categories: article.categories?.map((ac: { category: unknown }) => ac.category) || []
     };
 
     return NextResponse.json(transformedArticle);
@@ -50,6 +51,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 // PUT /api/articles/[id] - Update article
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
+    const { id } = await params;
     const supabase = createSupabaseAdmin();
     const body = await request.json();
 
@@ -79,7 +81,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       .from('articles')
       .select('id')
       .eq('slug', slug)
-      .neq('id', params.id)
+      .neq('id', id)
       .single();
 
     if (existingArticle) {
@@ -90,7 +92,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     }
 
     // Update the article
-    const updateData: any = {
+    const updateData: Record<string, unknown> = {
       title,
       slug,
       excerpt,
@@ -108,7 +110,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       const { data: currentArticle } = await supabase
         .from('articles')
         .select('published_at')
-        .eq('id', params.id)
+        .eq('id', id)
         .single();
 
       if (!currentArticle?.published_at) {
@@ -121,7 +123,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const { data: article, error: articleError } = await supabase
       .from('articles')
       .update(updateData)
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single();
 
@@ -138,12 +140,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     await supabase
       .from('article_categories')
       .delete()
-      .eq('article_id', params.id);
+      .eq('article_id', id);
 
     // Add new categories if provided
     if (categories.length > 0) {
       const categoryLinks = categories.map((categoryId: string) => ({
-        article_id: params.id,
+        article_id: id,
         category_id: categoryId
       }));
 
@@ -176,13 +178,13 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     await supabase
       .from('article_categories')
       .delete()
-      .eq('article_id', params.id);
+      .eq('article_id', id);
 
     // Delete the article
     const { error } = await supabase
       .from('articles')
       .delete()
-      .eq('id', params.id);
+      .eq('id', id);
 
     if (error) {
       console.error('Delete error:', error);

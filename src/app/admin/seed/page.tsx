@@ -9,7 +9,7 @@ import { AuthGuard } from '@/components/admin/AuthGuard';
 
 export default function SeedPage() {
   const [seeding, setSeeding] = useState(false);
-  const [result, setResult] = useState<{ success: boolean; message: string; data?: any } | null>(null);
+  const [result, setResult] = useState<{ success: boolean; message: string; data?: { categories: number; articles: number; timeline_entries: number } } | null>(null);
 
   const handleSeed = async () => {
     setSeeding(true);

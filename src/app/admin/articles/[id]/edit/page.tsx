@@ -3,9 +3,9 @@ import { ArticleEditor } from '@/components/admin/ArticleEditor';
 import { AuthGuard } from '@/components/admin/AuthGuard';
 
 interface EditArticlePageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export const metadata: Metadata = {
@@ -14,10 +14,11 @@ export const metadata: Metadata = {
   robots: 'noindex, nofollow',
 };
 
-export default function EditArticlePage({ params }: EditArticlePageProps) {
+export default async function EditArticlePage({ params }: EditArticlePageProps) {
+  const { id } = await params;
   return (
     <AuthGuard>
-      <ArticleEditor mode="edit" articleId={params.id} />
+      <ArticleEditor mode="edit" articleId={id} />
     </AuthGuard>
   );
 }
