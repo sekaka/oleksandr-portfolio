@@ -51,54 +51,55 @@ export function BlogCard({ article, index }: BlogCardProps) {
         transition: `all 0.8s cubic-bezier(0.4, 0, 0.2, 1) ${index * 100}ms`
       }}
     >
-      <Link href={`/blog/${article.slug}`}>
-        <Card className="modern-card group cursor-pointer overflow-hidden bg-gradient-to-br from-card to-card/50">
-          {/* Featured Image Placeholder */}
-          <div className="aspect-video bg-gradient-to-br from-primary/10 to-primary/5 relative overflow-hidden">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-6xl text-primary/30">📝</div>
-            </div>
-            <div className="absolute top-4 left-4">
+      <Link href={`/blog/${article.slug}`} className="block group">
+        <div className="flex gap-6 py-6 border-b border-border/50 hover:bg-muted/30 transition-colors -mx-4 px-4 rounded-lg">
+          {/* Content */}
+          <div className="flex-1 min-w-0">
+            {/* Categories */}
+            <div className="flex gap-2 mb-3">
               {article.categories.map((category) => (
                 <Badge 
                   key={category.id} 
-                  variant="secondary" 
-                  className="bg-background/90 backdrop-blur-sm"
+                  variant="outline" 
+                  className="text-xs bg-primary/5 border-primary/20 text-primary hover:bg-primary/10"
                 >
                   {category.name}
                 </Badge>
               ))}
             </div>
+            
+            {/* Title */}
+            <h2 className="text-xl font-bold leading-snug group-hover:text-primary transition-colors mb-2 line-clamp-2">
+              {article.title}
+            </h2>
+            
+            {/* Excerpt */}
+            <p className="text-muted-foreground leading-relaxed mb-4 line-clamp-2 text-sm">
+              {article.excerpt}
+            </p>
+            
+            {/* Meta Information */}
+            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <Calendar className="h-3 w-3" />
+                {formatDate(article.published_at)}
+              </span>
+              <span className="flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                {article.reading_time} min read
+              </span>
+              <span className="flex items-center gap-1">
+                <Eye className="h-3 w-3" />
+                {formatViews(article.view_count)} views
+              </span>
+            </div>
           </div>
           
-          <CardHeader className="pb-3">
-            <CardTitle className="text-xl font-bold leading-tight group-hover:text-primary transition-colors line-clamp-2">
-              {article.title}
-            </CardTitle>
-            <CardDescription className="text-base text-muted-foreground line-clamp-3">
-              {article.excerpt}
-            </CardDescription>
-          </CardHeader>
-          
-          <CardContent>
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <div className="flex items-center gap-4">
-                <span className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4" />
-                  {formatDate(article.published_at)}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Clock className="h-4 w-4" />
-                  {article.reading_time} min read
-                </span>
-                <span className="flex items-center gap-1">
-                  <Eye className="h-4 w-4" />
-                  {formatViews(article.view_count)} views
-                </span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          {/* Thumbnail */}
+          <div className="flex-shrink-0 w-24 h-24 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg flex items-center justify-center">
+            <div className="text-2xl text-primary/40">📝</div>
+          </div>
+        </div>
       </Link>
     </article>
   );
