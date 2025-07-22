@@ -8,7 +8,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = generateMetadata({
   title: 'Contact - Get in Touch',
   description: 'Get in touch for collaboration opportunities, technical consultation, or to discuss your next project. Available for freelance and full-time opportunities.',
-  path: '/contact'
+  url: '/contact'
 });
 
 export default function ContactPage() {

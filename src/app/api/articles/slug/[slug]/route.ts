@@ -2,14 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseAdmin } from '@/lib/supabase-server';
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 // GET /api/articles/slug/[slug] - Get article by slug
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
+    const { slug } = await params;
     const supabase = createSupabaseAdmin();
 
     const { data: article, error } = await supabase
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           category:categories(*)
         )
       `)
-      .eq('slug', params.slug)
+      .eq('slug', slug)
       .eq('status', 'published') // Only return published articles for public access
       .single();
 

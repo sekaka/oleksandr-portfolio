@@ -172,6 +172,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 // DELETE /api/articles/[id] - Delete article
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
+    const { id } = await params;
     const supabase = createSupabaseAdmin();
 
     // Delete category associations first (foreign key constraint)
