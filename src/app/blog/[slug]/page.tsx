@@ -14,7 +14,9 @@ interface BlogPostPageProps {
 
 async function getArticleBySlug(slug: string): Promise<Article | null> {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/articles/slug/${slug}`, {
+    // Use the environment variable, fallback to localhost for development
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const response = await fetch(`${baseUrl}/api/articles/slug/${slug}`, {
       cache: 'no-store' // Always get fresh data to update view count
     });
 

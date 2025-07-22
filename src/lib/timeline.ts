@@ -2,7 +2,9 @@ import type { TimelineEntry } from '@/types/timeline';
 
 export async function getTimelineEntries(): Promise<TimelineEntry[]> {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/timeline`, {
+    // Use the environment variable, fallback to localhost for development
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const response = await fetch(`${baseUrl}/api/timeline`, {
       cache: 'no-store' // Always get fresh data
     });
 
