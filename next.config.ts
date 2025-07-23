@@ -9,6 +9,16 @@ const nextConfig: NextConfig = {
     // Skip ESLint during build to allow deployment  
     ignoreDuringBuilds: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'gicpjydwmkbysjiicwoj.supabase.co',
+        port: '',
+        pathname: '/storage/v1/object/public/**',
+      },
+    ],
+  },
 };
 
 export default nextConfig;

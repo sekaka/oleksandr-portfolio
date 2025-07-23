@@ -131,9 +131,6 @@ export default function SeedPage() {
                     <Button variant="outline" size="sm" asChild>
                       <Link href="/admin/articles">Manage Articles</Link>
                     </Button>
-                    <Button variant="outline" size="sm" asChild>
-                      <Link href="/about">View Timeline</Link>
-                    </Button>
                   </div>
                 </div>
               )}

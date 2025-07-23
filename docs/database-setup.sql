@@ -78,12 +78,28 @@ CREATE TABLE IF NOT EXISTS skills (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Projects table
+CREATE TABLE IF NOT EXISTS projects (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title TEXT NOT NULL,
+  description TEXT,
+  image_url TEXT,
+  project_url TEXT,
+  tags TEXT[],
+  is_featured BOOLEAN DEFAULT false,
+  sort_order INTEGER,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_articles_slug ON articles(slug);
 CREATE INDEX IF NOT EXISTS idx_articles_status ON articles(status);
 CREATE INDEX IF NOT EXISTS idx_articles_published_at ON articles(published_at DESC);
 CREATE INDEX IF NOT EXISTS idx_categories_slug ON categories(slug);
 CREATE INDEX IF NOT EXISTS idx_timeline_sort ON timeline_entries(sort_order);
+CREATE INDEX IF NOT EXISTS idx_projects_sort ON projects(sort_order);
+CREATE INDEX IF NOT EXISTS idx_projects_featured ON projects(is_featured);
 
 -- Functions for updating timestamps
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -105,6 +121,10 @@ CREATE TRIGGER update_articles_updated_at
 
 CREATE TRIGGER update_timeline_updated_at 
     BEFORE UPDATE ON timeline_entries 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_projects_updated_at 
+    BEFORE UPDATE ON projects 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Function to create profile on signup

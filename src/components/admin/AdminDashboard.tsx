@@ -13,7 +13,8 @@ import {
   Eye,
   Edit,
   LogOut,
-  Calendar
+  Calendar,
+  Briefcase
 } from 'lucide-react';
 
 export function AdminDashboard() {
@@ -58,25 +59,25 @@ export function AdminDashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card">
+      <header className="sticky top-0 z-50 admin-header">
         <div className="flex h-16 items-center justify-between px-6">
           <div className="flex items-center gap-4">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
+            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-sm">
                 <span className="font-bold text-sm text-primary-foreground">OS</span>
               </div>
-              <span className="font-semibold">Admin Panel</span>
+              <span className="font-semibold text-foreground">Admin Panel</span>
             </Link>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <Link href="/">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                 <Eye className="h-4 w-4 mr-2" />
                 View Site
               </Button>
             </Link>
-            <Button variant="ghost" size="sm" onClick={handleLogout}>
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground hover:text-foreground">
               <LogOut className="h-4 w-4 mr-2" />
               Logout
             </Button>
@@ -86,29 +87,35 @@ export function AdminDashboard() {
 
       <div className="flex">
         {/* Sidebar */}
-        <aside className="w-64 min-h-screen bg-muted/20 border-r">
-          <nav className="p-4 space-y-2">
+        <aside className="w-64 min-h-[calc(100vh-64px)] admin-sidebar border-r border-border/60">
+          <nav className="p-4 space-y-1">
             <Link href="/admin">
-              <Button variant="ghost" className="w-full justify-start bg-primary/10 text-primary">
-                <BarChart3 className="h-4 w-4 mr-2" />
+              <Button variant="ghost" className="w-full justify-start admin-nav-button active bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20">
+                <BarChart3 className="h-4 w-4 mr-3" />
                 Dashboard
               </Button>
             </Link>
             <Link href="/admin/articles">
-              <Button variant="ghost" className="w-full justify-start">
-                <FileText className="h-4 w-4 mr-2" />
+              <Button variant="ghost" className="w-full justify-start admin-nav-button text-muted-foreground hover:text-foreground hover:bg-accent/50">
+                <FileText className="h-4 w-4 mr-3" />
                 Articles
               </Button>
             </Link>
             <Link href="/admin/timeline">
-              <Button variant="ghost" className="w-full justify-start">
-                <User className="h-4 w-4 mr-2" />
-                Timeline
+              <Button variant="ghost" className="w-full justify-start admin-nav-button text-muted-foreground hover:text-foreground hover:bg-accent/50">
+                <User className="h-4 w-4 mr-3" />
+                Experience
+              </Button>
+            </Link>
+            <Link href="/admin/projects">
+              <Button variant="ghost" className="w-full justify-start admin-nav-button text-muted-foreground hover:text-foreground hover:bg-accent/50">
+                <Briefcase className="h-4 w-4 mr-3" />
+                Projects
               </Button>
             </Link>
             <Link href="/admin/settings">
-              <Button variant="ghost" className="w-full justify-start">
-                <Settings className="h-4 w-4 mr-2" />
+              <Button variant="ghost" className="w-full justify-start admin-nav-button text-muted-foreground hover:text-foreground hover:bg-accent/50">
+                <Settings className="h-4 w-4 mr-3" />
                 Settings
               </Button>
             </Link>
@@ -128,7 +135,7 @@ export function AdminDashboard() {
 
             {/* Stats */}
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="modern-card">
+              <Card className="stats-card">
                 <CardHeader className="pb-2">
                   <CardDescription>Total Articles</CardDescription>
                   <CardTitle className="text-3xl">{stats.totalArticles}</CardTitle>
@@ -140,7 +147,7 @@ export function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="modern-card">
+              <Card className="stats-card">
                 <CardHeader className="pb-2">
                   <CardDescription>Total Views</CardDescription>
                   <CardTitle className="text-3xl">{stats.totalViews.toLocaleString()}</CardTitle>
@@ -152,7 +159,7 @@ export function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="modern-card">
+              <Card className="stats-card">
                 <CardHeader className="pb-2">
                   <CardDescription>Published Articles</CardDescription>
                   <CardTitle className="text-3xl">{stats.publishedArticles}</CardTitle>
@@ -164,7 +171,7 @@ export function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="modern-card">
+              <Card className="stats-card">
                 <CardHeader className="pb-2">
                   <CardDescription>Draft Articles</CardDescription>
                   <CardTitle className="text-3xl">{stats.draftArticles}</CardTitle>
@@ -187,23 +194,23 @@ export function AdminDashboard() {
               </Link>
               
               <Link href="/admin/timeline/new">
-                <Button variant="outline" className="w-full h-auto p-4 flex-col gap-2" size="lg">
+                <Button variant="outline" className="w-full h-auto p-4 flex-col gap-2 quick-action-btn" size="lg">
                   <Calendar className="h-5 w-5" />
                   Add Experience
                 </Button>
               </Link>
               
-              <Link href="/admin/articles">
-                <Button variant="outline" className="w-full h-auto p-4 flex-col gap-2" size="lg">
-                  <Edit className="h-5 w-5" />
-                  Edit Articles
+              <Link href="/admin/projects/new">
+                <Button variant="outline" className="w-full h-auto p-4 flex-col gap-2 quick-action-btn" size="lg">
+                  <Briefcase className="h-5 w-5" />
+                  Add Project
                 </Button>
               </Link>
               
-              <Link href="/admin/settings">
-                <Button variant="outline" className="w-full h-auto p-4 flex-col gap-2" size="lg">
-                  <Settings className="h-5 w-5" />
-                  Settings
+              <Link href="/admin/projects">
+                <Button variant="outline" className="w-full h-auto p-4 flex-col gap-2 quick-action-btn" size="lg">
+                  <Edit className="h-5 w-5" />
+                  Manage Projects
                 </Button>
               </Link>
             </div>
@@ -221,7 +228,7 @@ export function AdminDashboard() {
               <CardContent>
                 <div className="space-y-4">
                   {recentArticles.map((article) => (
-                    <div key={article.id} className="flex items-center justify-between p-4 border border-border rounded-lg">
+                    <div key={article.id} className="flex items-center justify-between p-4 border border-border/60 rounded-lg bg-card/30 hover:bg-card/60 transition-colors">
                       <div className="flex-1">
                         <h4 className="font-medium">{article.title}</h4>
                         <div className="flex items-center gap-4 mt-1">
