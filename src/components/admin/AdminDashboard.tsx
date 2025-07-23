@@ -187,7 +187,7 @@ export function AdminDashboard() {
             {/* Quick Actions */}
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
               <Link href="/admin/articles/new">
-                <Button className="w-full h-auto p-4 flex-col gap-2" size="lg">
+                <Button className="w-full h-auto p-4 flex-col gap-2 admin-primary-action" size="lg">
                   <PlusCircle className="h-5 w-5" />
                   New Article
                 </Button>
@@ -221,7 +221,7 @@ export function AdminDashboard() {
                 <div className="flex items-center justify-between">
                   <CardTitle>Recent Articles</CardTitle>
                   <Link href="/admin/articles">
-                    <Button variant="outline" size="sm">View All</Button>
+                    <Button variant="outline" size="sm" className="border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground">View All</Button>
                   </Link>
                 </div>
               </CardHeader>
@@ -248,11 +248,11 @@ export function AdminDashboard() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20">
                           <Edit className="h-4 w-4" />
                         </Button>
                         {article.status === 'published' && (
-                          <Button variant="ghost" size="sm">
+                          <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20">
                             <Eye className="h-4 w-4" />
                           </Button>
                         )}

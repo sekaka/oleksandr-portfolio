@@ -20,19 +20,21 @@ export default function Home() {
       <Header />
       
       {/* Hero Section */}
-      <section className="relative overflow-hidden gradient-bg py-20 lg:py-32">
+      <section className="relative overflow-hidden gradient-bg py-15 lg:py-15">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="relative px-4 md:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto text-center">
             <div>
-              <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">
-                <span className="gradient-text">Web Developer</span>
+              <h1 className="text-3xl md:text-5xl font-bold mb-8 leading-tight">
+                <span className="gradient-text">Oleksandr Sekretar</span>
+                <br />
+                <span className="text-muted-foreground">Web Developer</span>
               </h1>
             </div>
             <div>
-              <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-4xl mx-auto leading-relaxed font-light">
-                I like to create nice user interfaces and help corporate clients achieve their goals. 
-                Currently working as a <span className="text-primary font-semibold">Front-End Engineer at ButterflyMX</span>.
+              <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-4xl mx-auto leading-relaxed font-light text-left">
+                I specialize in crafting intuitive user interfaces that drive business outcomes for enterprise clients.
+                Currently working as <span className="text-primary font-semibold">Software Engineer at ButterflyMX</span>,  where I build scalable solutions that enhance user experience and support organizational objectives.
               </p>
             </div>
             <div className="flex flex-wrap justify-center gap-3">
@@ -60,7 +62,7 @@ export default function Home() {
       </section>
 
       {/* Experience Section */}
-      <section className="py-20 lg:py-24">
+      <section className="py-15 lg:py-15">
         <div className="px-4 md:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
@@ -68,12 +70,12 @@ export default function Home() {
                 Experience
               </h2>
               <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                A decade of experience building scalable applications and leading technical teams
+                A decade of experience building scalable applications
               </p>
             </div>
             <Timeline />
             <div className="text-center mt-12">
-              <Button asChild size="lg" className="text-base px-8 py-6">
+              <Button asChild size="lg" className="text-base px-8 py-6 enhanced-button">
                 <Link href="/resume.pdf" target="_blank">View Full Resume</Link>
               </Button>
             </div>
@@ -82,7 +84,7 @@ export default function Home() {
       </section>
 
       {/* Projects Section */}
-      <section className="gradient-bg py-20 lg:py-24">
+      <section className="gradient-bg py-15 lg:py-15">
         <div className="px-4 md:px-6 lg:px-8">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">

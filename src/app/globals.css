@@ -52,7 +52,7 @@
   --card-foreground: 15 15 15;
   --popover: 255 255 255;
   --popover-foreground: 15 15 15;
-  --primary: 16 185 129; /* Emerald-500 #10b981 */
+  --primary: 5 150 105; /* Emerald-600 #059669 - more visible */
   --primary-foreground: 255 255 255;
   --secondary: 248 250 252;
   --secondary-foreground: 30 41 59;
@@ -88,7 +88,7 @@
   --card-foreground: 248 250 252;
   --popover: 15 23 42;
   --popover-foreground: 248 250 252;
-  --primary: 52 211 153; /* Emerald-400 #34d399 - brighter for dark mode */
+  --primary: 34 197 94; /* Emerald-500 #22c55e - more visible in dark mode */
   --primary-foreground: 2 6 23;
   --secondary: 30 41 59; /* Slate-700 #1e293b */
   --secondary-foreground: 203 213 225;
@@ -282,30 +282,75 @@
   .admin-primary-btn {
     background: linear-gradient(135deg, 
       rgb(var(--primary)) 0%, 
-      rgb(var(--primary) / 0.9) 100%);
-    color: rgb(var(--primary-foreground));
-    border: 1px solid rgb(var(--primary));
-    font-weight: 600;
+      rgb(var(--primary) / 0.9) 100%) !important;
+    color: rgb(var(--primary-foreground)) !important;
+    border: 2px solid rgb(var(--primary)) !important;
+    font-weight: 600 !important;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 
-      0 2px 4px rgb(var(--primary) / 0.2),
-      0 0 0 0 rgb(var(--primary) / 0.4);
+      0 3px 6px rgb(var(--primary) / 0.3),
+      inset 0 1px 0 rgb(255 255 255 / 0.1) !important;
   }
 
   .admin-primary-btn:hover {
     background: linear-gradient(135deg, 
       rgb(var(--primary) / 0.9) 0%, 
-      rgb(var(--primary) / 0.8) 100%);
-    transform: translateY(-1px);
+      rgb(var(--primary) / 0.8) 100%) !important;
+    transform: translateY(-1px) !important;
     box-shadow: 
-      0 6px 12px rgb(var(--primary) / 0.3),
-      0 0 0 2px rgb(var(--primary) / 0.2);
+      0 6px 12px rgb(var(--primary) / 0.4),
+      inset 0 1px 0 rgb(255 255 255 / 0.1) !important;
   }
 
   .admin-primary-btn:disabled {
     opacity: 0.6;
     transform: none;
     box-shadow: none;
+  }
+
+  /* Admin primary action buttons (like New Article) */
+  .admin-primary-action {
+    background: linear-gradient(135deg, 
+      rgb(var(--primary)) 0%, 
+      rgb(var(--primary) / 0.9) 100%);
+    color: rgb(var(--primary-foreground));
+    border: 2px solid rgb(var(--primary));
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+      0 4px 8px rgb(var(--primary) / 0.25),
+      0 0 0 0 rgb(var(--primary) / 0.4);
+  }
+
+  .admin-primary-action:hover {
+    background: linear-gradient(135deg, 
+      rgb(var(--primary) / 0.9) 0%, 
+      rgb(var(--primary) / 0.8) 100%);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 
+      0 8px 16px rgb(var(--primary) / 0.3),
+      0 0 0 3px rgb(var(--primary) / 0.2);
+    border-color: rgb(var(--primary) / 0.8);
+  }
+
+  /* Enhanced button visibility for all contexts */
+  .enhanced-button {
+    background: rgb(var(--primary)) !important;
+    color: rgb(var(--primary-foreground)) !important;
+    border: 2px solid rgb(var(--primary)) !important;
+    font-weight: 600 !important;
+    box-shadow: 
+      0 2px 6px rgb(var(--primary) / 0.3),
+      inset 0 1px 0 rgb(255 255 255 / 0.1) !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .enhanced-button:hover {
+    background: rgb(var(--primary) / 0.9) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 
+      0 4px 12px rgb(var(--primary) / 0.4),
+      inset 0 1px 0 rgb(255 255 255 / 0.1) !important;
   }
   
   /* Enhanced gradients for better visual hierarchy */
