@@ -4,7 +4,7 @@ import { createSupabaseAdmin } from '@/lib/supabase-server';
 // GET /api/timeline - Get all timeline entries
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createSupabaseAdmin();
+    const supabase = await createSupabaseAdmin();
 
     const { data: timeline, error } = await supabase
       .from('timeline_entries')
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
 // POST /api/timeline - Create new timeline entry
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createSupabaseAdmin();
+    const supabase = await createSupabaseAdmin();
     const body = await request.json();
 
     const {

@@ -6,20 +6,20 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 // Server-side Supabase client
-export const createSupabaseServerClient = () =>
+export const createSupabaseServerClient = async () =>
   createServerClient(
     supabaseUrl,
     supabaseAnonKey,
     {
       cookies: {
-        get(name: string) {
-          return cookies().get(name)?.value;
+        async get(name: string) {
+          return (await cookies()).get(name)?.value;
         },
-        set(name: string, value: string, options) {
-          cookies().set({ name, value, ...options });
+        async set(name: string, value: string, options) {
+          (await cookies()).set({ name, value, ...options });
         },
-        remove(name: string, options) {
-          cookies().set({ name, value: '', ...options });
+        async remove(name: string, options) {
+          (await cookies()).set({ name, value: '', ...options });
         },
       },
     }

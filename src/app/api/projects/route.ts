@@ -4,7 +4,7 @@ import { CreateProjectData } from '@/types/project';
 
 export async function GET() {
   try {
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     const { data: projects, error } = await supabase
       .from('projects')
       .select('*')
@@ -25,7 +25,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     const body = await request.json();
     const projectData: CreateProjectData = body;
 

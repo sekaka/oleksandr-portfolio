@@ -4,7 +4,7 @@ import { createSupabaseAdmin } from '@/lib/supabase-server';
 // GET /api/categories - Get all categories with article counts
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createSupabaseAdmin();
+    const supabase = await createSupabaseAdmin();
 
     const { data: categories, error } = await supabase
       .from('categories')
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
 // POST /api/categories - Create new category
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createSupabaseAdmin();
+    const supabase = await createSupabaseAdmin();
     const body = await request.json();
 
     const { name, description, color } = body;

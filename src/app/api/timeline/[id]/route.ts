@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const supabase = createSupabaseAdmin();
+    const supabase = await createSupabaseAdmin();
     const { data: entry, error } = await supabase
       .from('timeline_entries')
       .select('*')
@@ -33,7 +33,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const supabase = createSupabaseAdmin();
+    const supabase = await createSupabaseAdmin();
     const body = await request.json();
 
     const {
@@ -81,7 +81,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const supabase = createSupabaseAdmin();
+    const supabase = await createSupabaseAdmin();
     const { error } = await supabase
       .from('timeline_entries')
       .delete()

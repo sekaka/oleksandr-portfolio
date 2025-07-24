@@ -4,7 +4,7 @@ import { createSupabaseAdmin } from '@/lib/supabase-server';
 // POST /api/test-article - Test simple article creation
 export async function POST() {
   try {
-    const supabase = createSupabaseAdmin();
+    const supabase = await createSupabaseAdmin();
 
     console.log('Testing simple article creation...');
 

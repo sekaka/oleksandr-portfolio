@@ -4,7 +4,7 @@ import { createSupabaseAdmin } from '@/lib/supabase-server';
 // POST /api/seed - Seed database with sample data
 export async function POST() {
   try {
-    const supabase = createSupabaseAdmin();
+    const supabase = await createSupabaseAdmin();
 
     // Clear existing data
     await supabase.from('article_categories').delete().neq('id', '00000000-0000-0000-0000-000000000000');

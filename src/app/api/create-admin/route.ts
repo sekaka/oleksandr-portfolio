@@ -4,7 +4,7 @@ import { createSupabaseAdmin } from '@/lib/supabase-server';
 // POST /api/create-admin - Create admin user (run once)
 export async function POST() {
   try {
-    const supabase = createSupabaseAdmin();
+    const supabase = await createSupabaseAdmin();
 
     const adminEmail = 'admin@oleksandr.dev';
     const adminPassword = 'your-secure-password-123';

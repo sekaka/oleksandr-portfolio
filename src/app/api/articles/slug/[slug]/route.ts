@@ -11,7 +11,7 @@ interface RouteParams {
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const { slug } = await params;
-    const supabase = createSupabaseAdmin();
+    const supabase = await createSupabaseAdmin();
 
     const { data: article, error } = await supabase
       .from('articles')

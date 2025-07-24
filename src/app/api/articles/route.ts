@@ -4,7 +4,7 @@ import { createSupabaseAdmin } from '@/lib/supabase-server';
 // GET /api/articles - Get all articles with optional filtering
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createSupabaseAdmin();
+    const supabase = await createSupabaseAdmin();
     const { searchParams } = new URL(request.url);
     
     const status = searchParams.get('status');
@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
 // POST /api/articles - Create new article
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createSupabaseAdmin();
+    const supabase = await createSupabaseAdmin();
     const body = await request.json();
 
     const {

@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes);
 
     // Upload to Supabase Storage
-    const supabase = createSupabaseAdmin();
+    const supabase = await createSupabaseAdmin();
     const { data, error } = await supabase.storage
       .from('project-images')
       .upload(filename, buffer, {

@@ -11,7 +11,7 @@ interface RouteParams {
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
-    const supabase = createSupabaseAdmin();
+    const supabase = await createSupabaseAdmin();
 
     const { data: article, error } = await supabase
       .from('articles')
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
-    const supabase = createSupabaseAdmin();
+    const supabase = await createSupabaseAdmin();
     const body = await request.json();
 
     const {
@@ -173,7 +173,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
-    const supabase = createSupabaseAdmin();
+    const supabase = await createSupabaseAdmin();
 
     // Delete category associations first (foreign key constraint)
     await supabase
