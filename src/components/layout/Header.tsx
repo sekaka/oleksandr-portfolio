@@ -73,7 +73,7 @@ export function Header() {
         
         {/* Right side */}
         <div className="flex items-center space-x-4">
-          <div className="hidden sm:inline-flex">
+          <div className="hidden">
             <ThemeToggle />
           </div>
           
