@@ -3,6 +3,7 @@ import { Footer } from '@/components/layout/Footer';
 import { Timeline } from '@/components/about/Timeline';
 import { ProjectsShowcase } from '@/components/home/ProjectsShowcase';
 import { Button } from '@/components/ui/button';
+import { ConsoleText } from '@/components/ui/console-text';
 import { generateMetadata } from '@/lib/seo';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -76,7 +77,7 @@ export default function Home() {
               {/* Left Column - Text Content */}
               <div className="order-2 lg:order-1">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                  <span className="gradient-text">Welcome.</span>
+                  <ConsoleText text="Welcome." className="gradient-text" />
                 </h1>
                 <p className="text-lg md:text-xl text-muted-foreground leading-relaxed font-light">
                   I specialize in crafting intuitive user interfaces that drive business outcomes for enterprise clients.
