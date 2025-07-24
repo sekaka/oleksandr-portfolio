@@ -29,7 +29,7 @@ export function ConsoleText({ text, className = '' }: ConsoleTextProps) {
           // Start final blink sequence after typing is done
           const finalBlinkInterval = setInterval(() => {
             if (visible === true) {
-              con.className = 'console-underscore hidden';
+              con.className = 'console-underscore console-hidden';
               visible = false;
             } else {
               con.className = 'console-underscore';
@@ -40,7 +40,7 @@ export function ConsoleText({ text, className = '' }: ConsoleTextProps) {
             // Hide cursor after 3 blinks
             if (blinkCount >= 3) {
               clearInterval(finalBlinkInterval);
-              con.className = 'console-underscore hidden';
+              con.className = 'console-underscore console-hidden';
             }
           }, 400);
         }

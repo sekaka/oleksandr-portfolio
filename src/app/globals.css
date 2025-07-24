@@ -180,7 +180,7 @@
   /* Timeline animations - handled via inline styles for better control */
   
   /* Console typewriter animation */
-  .hidden {
+  .console-hidden {
     opacity: 0;
   }
   

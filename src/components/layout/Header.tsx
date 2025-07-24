@@ -30,7 +30,7 @@ export function Header() {
         </Link>
         
         {/* Desktop Navigation */}
-        <NavigationMenu className="hidden md:flex absolute left-1/2 transform -translate-x-1/2">
+        <NavigationMenu className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 z-10">
           <NavigationMenuList className="flex space-x-1">
             <NavigationMenuItem>
               <NavigationMenuLink 
@@ -38,7 +38,7 @@ export function Header() {
                 className={`px-6 py-3 text-base font-medium rounded-lg transition-all duration-200 ${
                   isActive('/') 
                     ? 'bg-primary/10 text-primary' 
-                    : 'text-foreground/80 hover:text-primary hover:bg-primary/5'
+                    : 'text-white hover:text-primary hover:bg-primary/5'
                 }`}
               >
                 Home
@@ -50,7 +50,7 @@ export function Header() {
                 className={`px-6 py-3 text-base font-medium rounded-lg transition-all duration-200 ${
                   isActive('/blog') 
                     ? 'bg-primary/10 text-primary' 
-                    : 'text-foreground/80 hover:text-primary hover:bg-primary/5'
+                    : 'text-white hover:text-primary hover:bg-primary/5'
                 }`}
               >
                 Blog
