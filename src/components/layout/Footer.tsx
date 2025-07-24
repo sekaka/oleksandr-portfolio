@@ -4,22 +4,22 @@ import { Github, Linkedin, Youtube, Instagram } from 'lucide-react';
 const socialLinks = [
   {
     name: 'GitHub',
-    url: 'https://github.com/oleksandrsekretar',
+    url: 'https://github.com/sekaka/',
     icon: Github
   },
   {
     name: 'LinkedIn', 
-    url: 'https://linkedin.com/in/oleksandrsekretar',
+    url: 'https://www.linkedin.com/in/oleksandr-sekretar-61999673/',
     icon: Linkedin
   },
   {
     name: 'YouTube',
-    url: 'https://youtube.com/@oleksandrsekretar',
+    url: 'https://www.youtube.com/@SashaSekretar',
     icon: Youtube
   },
   {
     name: 'Instagram',
-    url: 'https://instagram.com/oleksandrsekretar',
+    url: 'https://www.instagram.com/sekaone/',
     icon: Instagram
   }
 ];
