@@ -1,7 +1,5 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import type { TimelineEntry as TimelineEntryType } from '@/types/timeline';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 
@@ -58,28 +56,22 @@ export function TimelineEntry({ entry, isLast = false, index }: TimelineEntryPro
       </div>
       
       {/* Content */}
-      <div className="flex-1 pb-12">
-        <Card className="modern-card bg-gradient-to-br from-card to-card/50 border-l-4 border-l-primary/20">
-          <CardHeader className="pb-3">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="flex-1 pb-8">
+        <div className="bg-card/30 border border-border/50 rounded-lg p-4">
+          <div className="space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div className="space-y-1">
-                <CardTitle className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
+                <h3 className="text-lg font-semibold text-foreground">
                   {entry.role}
-                </CardTitle>
-                <CardDescription className="text-base font-semibold text-primary">
+                </h3>
+                <p className="text-sm font-medium text-muted-foreground">
                   {entry.company}
-                </CardDescription>
+                </p>
               </div>
-              <Badge 
-                variant="outline" 
-                className="w-fit bg-primary/5 border-primary/20 text-primary font-medium"
-              >
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
                 {duration}
-              </Badge>
+              </span>
             </div>
-          </CardHeader>
-          
-          <CardContent className="space-y-5">
             {entry.description && (
               <p className="text-muted-foreground leading-relaxed text-sm">
                 {entry.description}
@@ -87,43 +79,40 @@ export function TimelineEntry({ entry, isLast = false, index }: TimelineEntryPro
             )}
             
             {entry.technologies && entry.technologies.length > 0 && (
-              <div className="space-y-3">
-                <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <span className="w-2 h-2 bg-primary rounded-full"></span>
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium text-foreground">
                   Technologies
                 </h4>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5">
                   {entry.technologies.map((tech, techIndex) => (
-                    <Badge 
+                    <span 
                       key={techIndex} 
-                      variant="secondary" 
-                      className="text-xs bg-secondary/80 hover:bg-secondary transition-colors"
+                      className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-secondary/60 text-secondary-foreground border border-secondary/40"
                     >
                       {tech}
-                    </Badge>
+                    </span>
                   ))}
                 </div>
               </div>
             )}
             
             {entry.achievements && entry.achievements.length > 0 && (
-              <div className="space-y-3">
-                <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <span className="w-2 h-2 bg-primary rounded-full"></span>
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium text-foreground">
                   Key Achievements
                 </h4>
-                <ul className="space-y-2">
+                <ul className="space-y-1.5">
                   {entry.achievements.map((achievement, achIndex) => (
-                    <li key={achIndex} className="flex items-start gap-3 text-sm text-muted-foreground">
-                      <span className="w-1.5 h-1.5 bg-primary/60 rounded-full mt-2 flex-shrink-0"></span>
+                    <li key={achIndex} className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <span className="w-1 h-1 bg-primary rounded-full mt-2 flex-shrink-0"></span>
                       <span>{achievement}</span>
                     </li>
                   ))}
                 </ul>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
