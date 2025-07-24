@@ -30,7 +30,7 @@ export function Header() {
         </Link>
         
         {/* Desktop Navigation */}
-        <NavigationMenu className="hidden md:flex">
+        <NavigationMenu className="hidden md:flex absolute left-1/2 transform -translate-x-1/2">
           <NavigationMenuList className="flex space-x-1">
             <NavigationMenuItem>
               <NavigationMenuLink 
@@ -71,8 +71,8 @@ export function Header() {
           </NavigationMenuList>
         </NavigationMenu>
         
-        {/* Right side */}
-        <div className="flex items-center space-x-4">
+        {/* Right side - matches logo width for perfect centering */}
+        <div className="flex items-center justify-end w-[140px] sm:w-[180px]">
           <div className="hidden">
             <ThemeToggle />
           </div>
