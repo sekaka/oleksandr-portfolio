@@ -2,10 +2,10 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Timeline } from '@/components/about/Timeline';
 import { ProjectsShowcase } from '@/components/home/ProjectsShowcase';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { generateMetadata } from '@/lib/seo';
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = generateMetadata({
@@ -20,42 +20,34 @@ export default function Home() {
       <Header />
       
       {/* Hero Section */}
-      <section className="relative overflow-hidden gradient-bg py-15 lg:py-15">
+      <section className="relative overflow-hidden gradient-bg py-4 lg:py-6">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="relative px-4 md:px-6 lg:px-8">
-          <div className="max-w-5xl mx-auto text-center">
-            <div>
-              <h1 className="text-3xl md:text-5xl font-bold mb-8 leading-tight">
-                <span className="gradient-text">Oleksandr Sekretar</span>
-                <br />
-                <span className="text-muted-foreground">Web Developer</span>
-              </h1>
-            </div>
-            <div>
-              <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-4xl mx-auto leading-relaxed font-light text-left">
-                I specialize in crafting intuitive user interfaces that drive business outcomes for enterprise clients.
-                Currently working as <span className="text-primary font-semibold">Software Engineer at ButterflyMX</span>,  where I build scalable solutions that enhance user experience and support organizational objectives.
-              </p>
-            </div>
-            <div className="flex flex-wrap justify-center gap-3">
-              <Badge variant="secondary" className="px-4 py-2 text-sm bg-primary/10 text-primary border-primary/20">
-                React
-              </Badge>
-              <Badge variant="secondary" className="px-4 py-2 text-sm bg-primary/10 text-primary border-primary/20">
-                Next.js
-              </Badge>
-              <Badge variant="secondary" className="px-4 py-2 text-sm bg-primary/10 text-primary border-primary/20">
-                Vue
-              </Badge>
-              <Badge variant="secondary" className="px-4 py-2 text-sm bg-primary/10 text-primary border-primary/20">
-                Supabase
-              </Badge>
-              <Badge variant="secondary" className="px-4 py-2 text-sm bg-primary/10 text-primary border-primary/20">
-                Vercel
-              </Badge>
-              <Badge variant="secondary" className="px-4 py-2 text-sm bg-primary/10 text-primary border-primary/20">
-                Electron
-              </Badge>
+          <div className="max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-16 items-center">
+              {/* Left Column - Text Content */}
+              <div className="order-2 lg:order-1">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                  <span className="gradient-text">Welcome.</span>
+                </h1>
+                <p className="text-lg md:text-xl text-muted-foreground leading-relaxed font-light">
+                  I specialize in crafting intuitive user interfaces that drive business outcomes for enterprise clients.
+                  Currently working as <span className="text-primary font-semibold">Software Engineer at ButterflyMX</span>, where I build scalable solutions that enhance user experience and support organizational objectives.
+                </p>
+              </div>
+              
+              {/* Right Column - Hero Image */}
+              <div className="order-1 lg:order-2">
+                <div className="relative aspect-square w-full max-w-xs sm:max-w-sm mx-auto lg:max-w-none">
+                  <Image
+                    src="/images/hero.png"
+                    alt="Oleksandr Sekretar"
+                    fill
+                    className="object-contain rounded-2xl"
+                    priority
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>

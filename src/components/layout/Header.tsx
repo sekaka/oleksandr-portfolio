@@ -25,7 +25,7 @@ export function Header() {
           </div>
           <div className="hidden sm:flex flex-col">
             <span className="font-semibold text-sm text-foreground">Oleksandr</span>
-            <span className="text-xs text-muted-foreground">Developer</span>
+            <span className="text-xs text-muted-foreground">Sekretar</span>
           </div>
         </Link>
         
