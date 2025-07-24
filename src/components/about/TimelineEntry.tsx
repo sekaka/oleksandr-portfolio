@@ -59,16 +59,21 @@ export function TimelineEntry({ entry, isLast = false, index }: TimelineEntryPro
       <div className="flex-1 pb-8">
         <div className="bg-card/30 border border-border/50 rounded-lg p-4">
           <div className="space-y-3">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
               <div className="space-y-1">
                 <h3 className="text-lg font-semibold text-foreground">
                   {entry.role}
                 </h3>
-                <p className="text-sm font-medium text-muted-foreground">
-                  {entry.company}
-                </p>
+                <div className="flex items-center justify-between sm:block">
+                  <p className="text-sm font-medium text-muted-foreground">
+                    {entry.company}
+                  </p>
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20 sm:hidden">
+                    {duration}
+                  </span>
+                </div>
               </div>
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+              <span className="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
                 {duration}
               </span>
             </div>
