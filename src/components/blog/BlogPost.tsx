@@ -77,11 +77,6 @@ export function BlogPost({ article }: BlogPostProps) {
               {article.title}
             </h1>
             
-            {/* Excerpt */}
-            <p className="text-xl text-muted-foreground leading-relaxed mb-8">
-              {article.excerpt}
-            </p>
-            
             {/* Meta Information */}
             <div className="flex flex-wrap items-center justify-between gap-6 py-6 border-t border-b border-border">
               <div className="flex items-center gap-6 text-sm text-muted-foreground">
