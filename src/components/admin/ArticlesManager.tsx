@@ -15,7 +15,8 @@ import {
   Calendar,
   Clock,
   BarChart3,
-  ArrowLeft
+  ArrowLeft,
+  RotateCcw
 } from 'lucide-react';
 import type { Article } from '@/types/article';
 
@@ -24,6 +25,7 @@ export function ArticlesManager() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'draft'>('all');
+  const [resettingViews, setResettingViews] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchArticles() {
@@ -48,7 +50,7 @@ export function ArticlesManager() {
 
   const filteredArticles = articles.filter(article => {
     const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         article.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
+                         (article.excerpt && article.excerpt.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesStatus = statusFilter === 'all' || article.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -70,6 +72,37 @@ export function ArticlesManager() {
         console.error('Error deleting article:', error);
         alert('Error deleting article. Please try again.');
       }
+    }
+  };
+
+  const handleResetViews = async (id: string) => {
+    if (!confirm('Are you sure you want to reset the view count to 0?')) {
+      return;
+    }
+
+    setResettingViews(id);
+    try {
+      const response = await fetch(`/api/articles/${id}/reset-views`, {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        // Update the article in the state
+        setArticles(articles.map(article => 
+          article.id === id 
+            ? { ...article, view_count: 0 }
+            : article
+        ));
+        alert('Views reset successfully!');
+      } else {
+        const errorData = await response.json();
+        alert(`Error resetting views: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error('Error resetting views:', error);
+      alert('Error resetting views. Please try again.');
+    } finally {
+      setResettingViews(null);
     }
   };
 
@@ -268,6 +301,17 @@ export function ArticlesManager() {
                               <Eye className="h-4 w-4" />
                             </Button>
                           </Link>
+                        )}
+                        {article.status === 'published' && article.view_count > 0 && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => handleResetViews(article.id)}
+                            disabled={resettingViews === article.id}
+                            title="Reset view count"
+                          >
+                            <RotateCcw className={`h-4 w-4 ${resettingViews === article.id ? 'animate-spin' : ''}`} />
+                          </Button>
                         )}
                         <Link href={`/admin/articles/${article.id}/edit`}>
                           <Button variant="ghost" size="sm">
