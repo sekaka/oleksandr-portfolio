@@ -117,7 +117,7 @@ export function BlogPost({ article }: BlogPostProps) {
               <img
                 src={article.featured_image}
                 alt={article.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
             </div>
           ) : (

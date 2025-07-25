@@ -104,7 +104,7 @@ export default function ProjectsAdminPage() {
                       src={project.image_url}
                       alt={project.title}
                       fill
-                      className="object-cover"
+                      className="object-contain"
                     />
                     {project.is_featured && (
                       <Badge className="absolute top-2 right-2" variant="secondary">

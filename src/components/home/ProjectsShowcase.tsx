@@ -99,7 +99,7 @@ export function ProjectsShowcase() {
                 src={project.image_url}
                 alt={project.title || 'Project image'}
                 fill
-                className="object-cover"
+                className="object-contain"
               />
             </div>
           )}

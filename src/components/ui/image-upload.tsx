@@ -78,7 +78,7 @@ export function ImageUpload({ value, onChange, onRemove, disabled }: ImageUpload
               src={value}
               alt="Uploaded image"
               fill
-              className="object-cover"
+              className="object-contain"
             />
           </div>
           <div className="flex gap-2 mt-2">
