@@ -56,6 +56,18 @@ export function Header() {
                 Blog
               </NavigationMenuLink>
             </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink 
+                href="/contact" 
+                className={`px-6 py-3 text-base font-medium rounded-lg transition-all duration-200 ${
+                  isActive('/contact') 
+                    ? 'bg-primary/10 text-primary' 
+                    : 'text-white hover:text-primary hover:bg-primary/5'
+                }`}
+              >
+                Contact
+              </NavigationMenuLink>
+            </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
         
@@ -115,6 +127,17 @@ export function Header() {
               onClick={() => setIsMenuOpen(false)}
             >
               Blog
+            </Link>
+            <Link 
+              href="/contact" 
+              className={`block px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                isActive('/contact') 
+                  ? 'bg-primary/10 text-primary' 
+                  : 'text-foreground/80 hover:text-primary hover:bg-primary/5'
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Contact
             </Link>
           </div>
         </div>

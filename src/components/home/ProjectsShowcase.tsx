@@ -107,9 +107,7 @@ export function ProjectsShowcase() {
             <CardTitle className="text-xl">{project.title}</CardTitle>
             {project.description && (
               <CardDescription className="text-muted-foreground">
-                {project.description.length > 100 
-                  ? `${project.description.substring(0, 100)}...` 
-                  : project.description}
+                {project.description}
               </CardDescription>
             )}
           </CardHeader>
