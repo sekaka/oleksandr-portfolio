@@ -1,8 +1,11 @@
 'use client';
 
+import { useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, Eye, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github-dark.css';
 import type { Article } from '@/types/article';
 
 interface BlogPostProps {
@@ -10,6 +13,11 @@ interface BlogPostProps {
 }
 
 export function BlogPost({ article }: BlogPostProps) {
+  useEffect(() => {
+    // Apply highlight.js to all code blocks
+    hljs.highlightAll();
+  }, [article.content]);
+
   const formatDate = (date: Date | string | null) => {
     if (!date) return 'No date';
     
@@ -123,7 +131,9 @@ export function BlogPost({ article }: BlogPostProps) {
 
           {/* Article Content */}
           <div className="prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-code:bg-muted prose-code:px-2 prose-code:py-1 prose-code:rounded prose-pre:bg-muted prose-pre:border">
-            <div dangerouslySetInnerHTML={{ __html: convertMarkdownToHtml(article.content) }} />
+            <div 
+              dangerouslySetInnerHTML={{ __html: convertMarkdownToHtml(article.content) }} 
+            />
           </div>
 
           {/* Article Footer */}
@@ -150,7 +160,16 @@ export function BlogPost({ article }: BlogPostProps) {
   );
 }
 
-// Enhanced markdown to HTML conversion with image support
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// Enhanced markdown to HTML conversion with highlight.js support
 function convertMarkdownToHtml(markdown: string): string {
   return markdown
     // Convert images first (before paragraphs)
@@ -165,21 +184,43 @@ function convertMarkdownToHtml(markdown: string): string {
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
     // Convert links
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary hover:underline" target="_blank" rel="noopener noreferrer">$1</a>')
-    // Convert code blocks
-    .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre class="bg-muted p-4 rounded-lg overflow-x-auto my-4"><code>$2</code></pre>')
+    // Convert code blocks with highlight.js support
+    .replace(/```(\w+)?\n([\s\S]*?)```/g, (_match, language, code) => {
+      // Use language class for highlight.js, or nohighlight for plain text
+      const langClass = language ? `language-${language.toLowerCase()}` : 'nohighlight';
+      
+      return `
+        <div class="relative bg-gray-900 rounded-lg my-4">
+          ${language ? `<div class="absolute top-3 left-3 text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded font-mono z-10">${language}</div>` : ''}
+          <pre class="overflow-x-auto text-sm font-mono p-4" style="line-height: 1.4;"><code class="${langClass} block whitespace-pre text-gray-100">${escapeHtml(code.trim())}</code></pre>
+        </div>
+      `;
+    })
     .replace(/`([^`]+)`/g, '<code class="bg-muted px-2 py-1 rounded text-sm">$1</code>')
     // Convert lists
     .replace(/^\* (.+)$/gm, '<li>$1</li>')
     .replace(/^- (.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>)/gs, '<ul class="list-disc pl-6 my-4">$1</ul>')
+    .replace(/(<li>.*<\/li>)/g, '<ul class="list-disc pl-6 my-4">$1</ul>')
     .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
-    // Convert paragraphs
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/^(.*)$/gm, '<p>$1</p>')
-    // Clean up empty paragraphs and fix nested elements
-    .replace(/<p><\/p>/g, '')
-    .replace(/<p>(<h[1-6]>.*<\/h[1-6]>)<\/p>/g, '$1')
-    .replace(/<p>(<pre.*<\/pre>)<\/p>/gs, '$1')
-    .replace(/<p>(<ul.*<\/ul>)<\/p>/gs, '$1')
-    .replace(/<p>(<img.*\/>)<\/p>/g, '<div class="text-center my-6">$1</div>');
+    // Convert paragraphs (split by double newlines)
+    .split(/\n\s*\n/)
+    .map(paragraph => {
+      const trimmed = paragraph.trim();
+      if (!trimmed) return '';
+      
+      // Don't wrap these elements in <p> tags
+      if (trimmed.startsWith('<h') || 
+          trimmed.startsWith('<pre') || 
+          trimmed.startsWith('<ul') || 
+          trimmed.startsWith('<ol') || 
+          trimmed.startsWith('<div') ||
+          trimmed.startsWith('<img')) {
+        return trimmed;
+      }
+      
+      // Wrap regular text in <p> tags
+      return `<p>${trimmed}</p>`;
+    })
+    .filter(paragraph => paragraph.length > 0)
+    .join('\n\n');
 }
