@@ -71,30 +71,31 @@ export function BlogCard({ article, index }: BlogCardProps) {
                 {article.excerpt}
               </p>
               
+              {/* Tags */}
+              {article.tags && article.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1 mb-2">
+                  {article.tags.map((tag) => (
+                    <Badge 
+                      key={tag} 
+                      variant="secondary" 
+                      className="bg-primary/10 text-primary border-primary/20 text-xs px-2 py-0.5"
+                    >
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+              
               {/* Meta Information */}
-              <div className="flex items-center justify-between pt-2">
-                <div className="flex items-center gap-3 md:gap-6 text-sm text-muted-foreground">
-                  <span className="block sm:hidden">{formatDate(article.published_at)}</span>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-2">
+                <div className="flex items-center gap-3 text-xs sm:text-sm text-muted-foreground flex-wrap">
+                  <span>{formatDate(article.published_at)}</span>
                   <span>{article.reading_time} min read</span>
                   <span className="flex items-center gap-1">
                     <Eye className="h-3 w-3" />
                     {formatViews(article.view_count)}
                   </span>
                 </div>
-                {/* Tags */}
-                {article.tags && article.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mb-2">
-                    {article.tags.map((tag) => (
-                      <Badge 
-                        key={tag} 
-                        variant="secondary" 
-                        className="bg-primary/10 text-primary border-primary/20 text-xs px-2 py-0.5"
-                      >
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
             
