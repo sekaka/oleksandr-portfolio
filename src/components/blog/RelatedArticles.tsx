@@ -15,57 +15,30 @@ export function RelatedArticles({ currentArticle }: RelatedArticlesProps) {
   const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
 
   useEffect(() => {
-    // Mock related articles - in production this would be an API call
-    const mockRelatedArticles: Article[] = [
-      {
-        id: '2',
-        title: 'Building Scalable React Applications with TypeScript',
-        slug: 'scalable-react-typescript-applications',
-        excerpt: 'Best practices for structuring large React applications with TypeScript, including patterns for components, state management, and testing strategies.',
-        content: '',
-        featured_image: null,
-        status: 'published',
-        published_at: new Date('2024-01-08'),
-        created_at: new Date('2024-01-05'),
-        updated_at: new Date('2024-01-08'),
-        author_id: 'user-1',
-        view_count: 1923,
-        reading_time: 8,
-        meta_title: 'Scalable React TypeScript Applications',
-        meta_description: 'Learn to build maintainable React applications with TypeScript',
-        categories: [
-          { id: '1', name: 'React', slug: 'react', description: 'React framework articles' },
-          { id: '3', name: 'TypeScript', slug: 'typescript', description: 'TypeScript language articles' }
-        ]
-      },
-      {
-        id: '3',
-        title: 'Modern Frontend Architecture: Micro-Frontends vs Monoliths',
-        slug: 'frontend-architecture-micro-frontends',
-        excerpt: 'Exploring different approaches to frontend architecture, comparing micro-frontends with monolithic applications and when to choose each approach.',
-        content: '',
-        featured_image: null,
-        status: 'published',
-        published_at: new Date('2024-01-01'),
-        created_at: new Date('2023-12-28'),
-        updated_at: new Date('2024-01-01'),
-        author_id: 'user-1',
-        view_count: 3456,
-        reading_time: 15,
-        meta_title: 'Frontend Architecture: Micro-Frontends Guide',
-        meta_description: 'Compare micro-frontends vs monolithic frontend architectures',
-        categories: [
-          { id: '4', name: 'Architecture', slug: 'architecture', description: 'Software architecture articles' }
-        ]
+    async function fetchRelatedArticles() {
+      try {
+        // Fetch recent published articles, excluding the current one
+        const response = await fetch(`/api/articles?status=published&limit=6`);
+        if (response.ok) {
+          const allArticles: Article[] = await response.json();
+          
+          // Filter out the current article and get related ones
+          const related = allArticles
+            .filter(article => article.id !== currentArticle.id)
+            .slice(0, 2);
+          
+          setRelatedArticles(related);
+        } else {
+          console.warn('Failed to fetch related articles');
+          setRelatedArticles([]);
+        }
+      } catch (error) {
+        console.error('Error fetching related articles:', error);
+        setRelatedArticles([]);
       }
-    ];
+    }
 
-    // Filter out the current article and get related ones
-    const related = mockRelatedArticles.filter(article => 
-      article.id !== currentArticle.id
-    ).slice(0, 2);
-
-    setRelatedArticles(related);
+    fetchRelatedArticles();
   }, [currentArticle.id]);
 
   const formatDate = (date: Date | string | null) => {

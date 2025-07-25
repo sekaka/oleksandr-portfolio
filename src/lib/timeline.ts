@@ -23,13 +23,9 @@ export async function getTimelineEntries(): Promise<TimelineEntry[]> {
 
 export async function getFeaturedSkills() {
   try {
-    // Mock skills for now - will be replaced with API call when skills management is added
-    return [
-      { id: '1', name: 'Vue.js', category: 'Frontend', proficiency: 5, years_experience: 6, is_featured: true },
-      { id: '2', name: 'React', category: 'Frontend', proficiency: 4, years_experience: 4, is_featured: true },
-      { id: '3', name: 'TypeScript', category: 'Languages', proficiency: 5, years_experience: 5, is_featured: true },
-      { id: '4', name: 'Node.js', category: 'Backend', proficiency: 4, years_experience: 5, is_featured: true },
-    ];
+    // Skills API will be implemented in future - for now return empty array
+    // TODO: Implement skills management API
+    return [];
   } catch (err) {
     console.error('Skills fetch error:', err);
     return [];
@@ -38,22 +34,9 @@ export async function getFeaturedSkills() {
 
 export async function getAllSkillsByCategory() {
   try {
-    // Mock skills grouped by category - will be replaced with API call
-    return {
-      'Frontend': [
-        { id: '1', name: 'Vue.js', category: 'Frontend', proficiency: 5, years_experience: 6, is_featured: true },
-        { id: '2', name: 'React', category: 'Frontend', proficiency: 4, years_experience: 4, is_featured: true },
-        { id: '7', name: 'Angular', category: 'Frontend', proficiency: 3, years_experience: 2, is_featured: false },
-      ],
-      'Backend': [
-        { id: '4', name: 'Node.js', category: 'Backend', proficiency: 4, years_experience: 5, is_featured: true },
-        { id: '8', name: 'PHP', category: 'Backend', proficiency: 4, years_experience: 8, is_featured: false },
-      ],
-      'Languages': [
-        { id: '3', name: 'TypeScript', category: 'Languages', proficiency: 5, years_experience: 5, is_featured: true },
-        { id: '9', name: 'JavaScript', category: 'Languages', proficiency: 5, years_experience: 8, is_featured: false },
-      ]
-    };
+    // Skills API will be implemented in future - for now return empty object
+    // TODO: Implement skills management API with categories
+    return {};
   } catch (err) {
     console.error('All skills fetch error:', err);
     return {};

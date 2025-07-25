@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,6 @@ import {
   FileText, 
   User, 
   BarChart3, 
-  Settings,
   PlusCircle,
   Eye,
   Edit,
@@ -16,43 +16,90 @@ import {
   Calendar,
   Briefcase
 } from 'lucide-react';
+import type { Article } from '@/types/article';
+
+interface DashboardStats {
+  totalArticles: number;
+  publishedArticles: number;
+  draftArticles: number;
+  totalViews: number;
+  totalProjects: number;
+  totalTimelineEntries: number;
+}
 
 export function AdminDashboard() {
-  // Mock data - would be replaced with real API calls
-  const stats = {
-    totalArticles: 12,
-    publishedArticles: 8,
-    draftArticles: 4,
-    totalViews: 15420,
-    monthlyViews: 3240
-  };
+  const [stats, setStats] = useState<DashboardStats>({
+    totalArticles: 0,
+    publishedArticles: 0,
+    draftArticles: 0,
+    totalViews: 0,
+    totalProjects: 0,
+    totalTimelineEntries: 0
+  });
+  const [recentArticles, setRecentArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const recentArticles = [
-    {
-      id: '1',
-      title: 'Migrating from Vue 2 to Vue 3: A Production Journey',
-      status: 'published',
-      views: 2847,
-      publishedAt: '2024-01-15'
-    },
-    {
-      id: '2',
-      title: 'Building Scalable React Applications with TypeScript',
-      status: 'published',
-      views: 1923,
-      publishedAt: '2024-01-08'
-    },
-    {
-      id: '3',
-      title: 'Modern State Management Patterns',
-      status: 'draft',
-      views: 0,
-      publishedAt: null
+  useEffect(() => {
+    async function fetchDashboardData() {
+      try {
+        // Fetch all data in parallel
+        const [articlesResponse, projectsResponse, timelineResponse] = await Promise.all([
+          fetch('/api/articles'),
+          fetch('/api/projects'),
+          fetch('/api/timeline')
+        ]);
+
+        let totalArticles = 0, publishedArticles = 0, draftArticles = 0, totalViews = 0;
+        let totalProjects = 0, totalTimelineEntries = 0;
+        let recentArticlesData: Article[] = [];
+
+        // Process articles data
+        if (articlesResponse.ok) {
+          const articles: Article[] = await articlesResponse.json();
+          const published = articles.filter(a => a.status === 'published');
+          const drafts = articles.filter(a => a.status === 'draft');
+          
+          totalArticles = articles.length;
+          publishedArticles = published.length;
+          draftArticles = drafts.length;
+          totalViews = published.reduce((sum, article) => sum + (article.view_count || 0), 0);
+          recentArticlesData = articles.slice(0, 3);
+        }
+
+        // Process projects data
+        if (projectsResponse.ok) {
+          const projects = await projectsResponse.json();
+          totalProjects = projects.length;
+        }
+
+        // Process timeline data
+        if (timelineResponse.ok) {
+          const timeline = await timelineResponse.json();
+          totalTimelineEntries = timeline.length;
+        }
+
+        setStats({
+          totalArticles,
+          publishedArticles,
+          draftArticles,
+          totalViews,
+          totalProjects,
+          totalTimelineEntries
+        });
+
+        setRecentArticles(recentArticlesData);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
     }
-  ];
+
+    fetchDashboardData();
+  }, []);
 
   const handleLogout = () => {
-    // Mock logout - would integrate with auth system
+    // TODO: Integrate with auth system
     window.location.href = '/admin/login';
   };
 
@@ -64,7 +111,7 @@ export function AdminDashboard() {
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-sm">
-                <span className="font-bold text-sm text-primary-foreground">OS</span>
+                <BarChart3 className="h-4 w-4 text-primary-foreground" />
               </div>
               <span className="font-semibold text-foreground">Admin Panel</span>
             </Link>
@@ -113,12 +160,6 @@ export function AdminDashboard() {
                 Projects
               </Button>
             </Link>
-            <Link href="/admin/settings">
-              <Button variant="ghost" className="w-full justify-start admin-nav-button text-muted-foreground hover:text-foreground hover:bg-accent/50">
-                <Settings className="h-4 w-4 mr-3" />
-                Settings
-              </Button>
-            </Link>
           </nav>
         </aside>
 
@@ -134,69 +175,85 @@ export function AdminDashboard() {
             </div>
 
             {/* Stats */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               <Card className="stats-card">
                 <CardHeader className="pb-2">
-                  <CardDescription>Total Articles</CardDescription>
-                  <CardTitle className="text-3xl">{stats.totalArticles}</CardTitle>
+                  <CardDescription className="flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    Articles
+                  </CardDescription>
+                  <CardTitle className="text-3xl">
+                    {loading ? '-' : stats.totalArticles}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    {stats.publishedArticles} published, {stats.draftArticles} drafts
+                    {loading ? 'Loading...' : `${stats.publishedArticles} published, ${stats.draftArticles} drafts`}
                   </p>
                 </CardContent>
               </Card>
 
               <Card className="stats-card">
                 <CardHeader className="pb-2">
-                  <CardDescription>Total Views</CardDescription>
-                  <CardTitle className="text-3xl">{stats.totalViews.toLocaleString()}</CardTitle>
+                  <CardDescription className="flex items-center gap-2">
+                    <Briefcase className="h-4 w-4" />
+                    Projects
+                  </CardDescription>
+                  <CardTitle className="text-3xl">
+                    {loading ? '-' : stats.totalProjects}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    {stats.monthlyViews.toLocaleString()} this month
+                    Portfolio projects
                   </p>
                 </CardContent>
               </Card>
 
               <Card className="stats-card">
                 <CardHeader className="pb-2">
-                  <CardDescription>Published Articles</CardDescription>
-                  <CardTitle className="text-3xl">{stats.publishedArticles}</CardTitle>
+                  <CardDescription className="flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    Experience
+                  </CardDescription>
+                  <CardTitle className="text-3xl">
+                    {loading ? '-' : stats.totalTimelineEntries}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    {Math.round((stats.publishedArticles / stats.totalArticles) * 100)}% of total
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="stats-card">
-                <CardHeader className="pb-2">
-                  <CardDescription>Draft Articles</CardDescription>
-                  <CardTitle className="text-3xl">{stats.draftArticles}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Ready to publish
+                    Career timeline entries
                   </p>
                 </CardContent>
               </Card>
             </div>
 
+            {/* Article Views - Only show if there are published articles */}
+            {!loading && stats.publishedArticles > 0 && (
+              <Card className="stats-card">
+                <CardHeader className="pb-2">
+                  <CardDescription className="flex items-center gap-2">
+                    <Eye className="h-4 w-4" />
+                    Total Article Views
+                  </CardDescription>
+                  <CardTitle className="text-3xl">
+                    {stats.totalViews.toLocaleString()}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Across {stats.publishedArticles} published article{stats.publishedArticles !== 1 ? 's' : ''}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Quick Actions */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               <Link href="/admin/articles/new">
                 <Button className="w-full h-auto p-4 flex-col gap-2 admin-primary-action" size="lg">
                   <PlusCircle className="h-5 w-5" />
                   New Article
-                </Button>
-              </Link>
-              
-              <Link href="/admin/timeline/new">
-                <Button variant="outline" className="w-full h-auto p-4 flex-col gap-2 quick-action-btn" size="lg">
-                  <Calendar className="h-5 w-5" />
-                  Add Experience
                 </Button>
               </Link>
               
@@ -207,10 +264,10 @@ export function AdminDashboard() {
                 </Button>
               </Link>
               
-              <Link href="/admin/projects">
+              <Link href="/admin/timeline/new">
                 <Button variant="outline" className="w-full h-auto p-4 flex-col gap-2 quick-action-btn" size="lg">
-                  <Edit className="h-5 w-5" />
-                  Manage Projects
+                  <Calendar className="h-5 w-5" />
+                  Add Experience
                 </Button>
               </Link>
             </div>
@@ -227,38 +284,54 @@ export function AdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentArticles.map((article) => (
-                    <div key={article.id} className="flex items-center justify-between p-4 border border-border/60 rounded-lg bg-card/30 hover:bg-card/60 transition-colors">
-                      <div className="flex-1">
-                        <h4 className="font-medium">{article.title}</h4>
-                        <div className="flex items-center gap-4 mt-1">
-                          <Badge variant={article.status === 'published' ? 'default' : 'secondary'}>
-                            {article.status}
-                          </Badge>
+                  {loading ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      Loading articles...
+                    </div>
+                  ) : recentArticles.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      No articles yet. <Link href="/admin/articles/new" className="text-primary hover:underline">Create your first article</Link>
+                    </div>
+                  ) : (
+                    recentArticles.map((article) => (
+                      <div key={article.id} className="flex items-center justify-between p-4 border border-border/60 rounded-lg bg-card/30 hover:bg-card/60 transition-colors">
+                        <div className="flex-1">
+                          <h4 className="font-medium">{article.title}</h4>
+                          <div className="flex items-center gap-4 mt-1">
+                            <Badge variant={article.status === 'published' ? 'default' : 'secondary'}>
+                              {article.status}
+                            </Badge>
+                            {article.status === 'published' && article.view_count !== undefined && (
+                              <>
+                                <span className="text-sm text-muted-foreground">
+                                  {article.view_count} views
+                                </span>
+                                {article.published_at && (
+                                  <span className="text-sm text-muted-foreground">
+                                    Published {new Date(article.published_at).toLocaleDateString()}
+                                  </span>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Link href={`/admin/articles/${article.id}/edit`}>
+                            <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </Link>
                           {article.status === 'published' && (
-                            <>
-                              <span className="text-sm text-muted-foreground">
-                                {article.views} views
-                              </span>
-                              <span className="text-sm text-muted-foreground">
-                                Published {new Date(article.publishedAt!).toLocaleDateString()}
-                              </span>
-                            </>
+                            <Link href={`/blog/${article.slug}`} target="_blank">
+                              <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20">
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                            </Link>
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        {article.status === 'published' && (
-                          <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>

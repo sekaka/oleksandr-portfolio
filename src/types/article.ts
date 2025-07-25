@@ -6,10 +6,10 @@ export interface Article {
   content: string;
   featured_image?: string;
   status: 'draft' | 'published' | 'archived';
-  published_at?: string;
-  created_at: string;
-  updated_at: string;
-  author_id: string;
+  published_at?: string | Date | null;
+  created_at: string | Date;
+  updated_at: string | Date;
+  author_id?: string | null;
   view_count: number;
   reading_time?: number;
   seo_title?: string;
@@ -23,8 +23,8 @@ export interface Category {
   name: string;
   slug: string;
   description?: string;
-  color: string;
-  created_at: string;
+  color?: string | null;
+  created_at: string | Date;
 }
 
 export interface ArticleFilters {
