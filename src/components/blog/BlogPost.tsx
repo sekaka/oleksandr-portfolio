@@ -197,11 +197,13 @@ function convertMarkdownToHtml(markdown: string): string {
       `;
     })
     .replace(/`([^`]+)`/g, '<code class="bg-muted px-2 py-1 rounded text-sm">$1</code>')
-    // Convert lists
-    .replace(/^\* (.+)$/gm, '<li>$1</li>')
-    .replace(/^- (.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>)/g, '<ul class="list-disc pl-6 my-4">$1</ul>')
-    .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+    // Remove line-ending backslashes that break list formatting
+    .replace(/\\\s*\n/g, '\n')
+    // Convert lists - handle consecutive list items properly
+    .replace(/^[\*\-]\s+(.+)$/gm, '<li>$1</li>')
+    .replace(/^\d+\.\s+(.+)$/gm, '<li>$1</li>')
+    // Group consecutive <li> elements into <ul> or <ol>
+    .replace(/(<li>.*<\/li>(\s*<li>.*<\/li>)*)/g, '<ul class="list-disc pl-6 my-4">$1</ul>')
     // Convert paragraphs (split by double newlines)
     .split(/\n\s*\n/)
     .map(paragraph => {
@@ -214,7 +216,8 @@ function convertMarkdownToHtml(markdown: string): string {
           trimmed.startsWith('<ul') || 
           trimmed.startsWith('<ol') || 
           trimmed.startsWith('<div') ||
-          trimmed.startsWith('<img')) {
+          trimmed.startsWith('<img') ||
+          trimmed.includes('<li>')) {
         return trimmed;
       }
       
