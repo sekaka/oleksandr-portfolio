@@ -71,11 +71,19 @@ export function RelatedArticles({ currentArticle }: RelatedArticlesProps) {
             {relatedArticles.map((article) => (
               <Link key={article.id} href={`/blog/${article.slug}`}>
                 <Card className="modern-card group cursor-pointer h-full">
-                  {/* Featured Image Placeholder */}
+                  {/* Featured Image */}
                   <div className="aspect-video bg-gradient-to-br from-primary/10 to-primary/5 relative overflow-hidden">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-4xl text-primary/30">📝</div>
-                    </div>
+                    {article.featured_image ? (
+                      <img
+                        src={article.featured_image}
+                        alt={article.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="text-4xl text-primary/30">📝</div>
+                      </div>
+                    )}
                     <div className="absolute top-3 left-3">
                       {article.categories.slice(0, 1).map((category) => (
                         <Badge 

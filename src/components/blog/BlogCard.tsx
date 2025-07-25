@@ -103,8 +103,18 @@ export function BlogCard({ article, index }: BlogCardProps) {
             </div>
             
             {/* Thumbnail */}
-            <div className="flex-shrink-0 w-20 h-20 md:w-28 md:h-28 bg-gradient-to-br from-muted to-muted/50 rounded-md flex items-center justify-center">
-              <div className="text-2xl md:text-3xl text-muted-foreground/40">📄</div>
+            <div className="flex-shrink-0 w-20 h-20 md:w-28 md:h-28 bg-gradient-to-br from-muted to-muted/50 rounded-md overflow-hidden">
+              {article.featured_image ? (
+                <img
+                  src={article.featured_image}
+                  alt={article.title}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="text-2xl md:text-3xl text-muted-foreground/40">📄</div>
+                </div>
+              )}
             </div>
           </div>
         </div>

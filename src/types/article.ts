@@ -4,7 +4,7 @@ export interface Article {
   slug: string;
   excerpt?: string;
   content: string;
-  featured_image?: string;
+  featured_image?: string | null;
   status: 'draft' | 'published' | 'archived';
   published_at?: string | Date | null;
   created_at: string | Date;

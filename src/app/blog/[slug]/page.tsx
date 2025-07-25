@@ -52,11 +52,13 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       publishedTime: article.published_at ? new Date(article.published_at).toISOString() : undefined,
       modifiedTime: article.updated_at ? new Date(article.updated_at).toISOString() : undefined,
       authors: ['Oleksandr Sekretar'],
+      images: article.featured_image ? [article.featured_image] : undefined,
     },
     twitter: {
       card: 'summary_large_image',
       title: article.title,
       description: article.excerpt,
+      images: article.featured_image ? [article.featured_image] : undefined,
     },
   };
 }

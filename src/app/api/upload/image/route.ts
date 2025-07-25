@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseAdmin } from '@/lib/supabase-server';
+import { writeFile, mkdir } from 'fs/promises';
+import { join } from 'path';
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,19 +31,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get upload type from form data (default to 'article')
+    const uploadType = formData.get('type')?.toString() || 'article';
+    
     // Generate unique filename
     const timestamp = Date.now();
     const fileExtension = file.name.split('.').pop() || 'jpg';
-    const filename = `project_${timestamp}.${fileExtension}`;
+    const filename = `${uploadType}_${timestamp}.${fileExtension}`;
 
     // Convert file to buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
+    // Use project-images bucket for both types for now (until article-images bucket is created)
+    const bucket = 'project-images';
+
     // Upload to Supabase Storage
     const supabase = await createSupabaseAdmin();
+    
+    // Check if bucket exists first
+    const { data: buckets, error: listError } = await supabase.storage.listBuckets();
+    console.log('Available buckets:', buckets?.map(b => b.name));
+    
+    if (listError) {
+      console.error('Error listing buckets:', listError);
+      return NextResponse.json(
+        { error: 'Storage configuration error', details: listError.message },
+        { status: 500 }
+      );
+    }
+    
     const { data, error } = await supabase.storage
-      .from('project-images')
+      .from(bucket)
       .upload(filename, buffer, {
         contentType: file.type,
         upsert: false
@@ -49,22 +70,49 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Supabase storage error:', error);
-      return NextResponse.json(
-        { error: 'Failed to upload image to storage' },
-        { status: 500 }
-      );
+      console.warn('Falling back to local storage...');
+      
+      // Fallback to local storage
+      try {
+        const uploadDir = join(process.cwd(), 'public', 'uploads');
+        await mkdir(uploadDir, { recursive: true });
+        
+        const filePath = join(uploadDir, filename);
+        await writeFile(filePath, buffer);
+        
+        const localUrl = `/uploads/${filename}`;
+        
+        return NextResponse.json({
+          url: localUrl,
+          filename: filename,
+          size: file.size,
+          type: file.type,
+          storage: 'local'
+        });
+      } catch (localError) {
+        console.error('Local storage fallback failed:', localError);
+        return NextResponse.json(
+          { 
+            error: 'Failed to upload image',
+            details: `Supabase: ${error.message}, Local: ${localError}`,
+            bucket: bucket
+          },
+          { status: 500 }
+        );
+      }
     }
 
     // Get public URL
     const { data: { publicUrl } } = supabase.storage
-      .from('project-images')
+      .from(bucket)
       .getPublicUrl(filename);
 
     return NextResponse.json({
       url: publicUrl,
       filename: filename,
       size: file.size,
-      type: file.type
+      type: file.type,
+      storage: 'supabase'
     });
 
   } catch (error) {

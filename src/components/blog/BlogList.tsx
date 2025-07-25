@@ -49,7 +49,7 @@ export function BlogList() {
                   <div className="h-3 bg-muted rounded w-16"></div>
                 </div>
               </div>
-              <div className="w-28 h-28 bg-muted rounded-md flex-shrink-0"></div>
+              <div className="w-20 h-20 md:w-28 md:h-28 bg-muted rounded-md flex-shrink-0"></div>
             </div>
           </div>
         ))}

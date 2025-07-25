@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,7 +13,10 @@ import {
   Send,
   X,
   Plus,
-  AlertCircle
+  AlertCircle,
+  Upload,
+  Image as ImageIcon,
+  FileImage
 } from 'lucide-react';
 import type { Article } from '@/types/article';
 
@@ -54,6 +57,12 @@ export function ArticleEditor({ mode, articleId }: ArticleEditorProps) {
 
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingContentImage, setUploadingContentImage] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [cursorPosition, setCursorPosition] = useState(0);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Fetch categories
   useEffect(() => {
@@ -142,6 +151,158 @@ export function ArticleEditor({ mode, articleId }: ArticleEditorProps) {
         ? prev.categories.filter(id => id !== categoryId)
         : [...prev.categories, categoryId]
     }));
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', 'article');
+
+      const response = await fetch('/api/upload/image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setFormData(prev => ({ ...prev, featured_image: data.url }));
+      } else {
+        const errorData = await response.json();
+        console.error('Upload error details:', errorData);
+        alert(`Error uploading image: ${errorData.error}${errorData.details ? ` - ${errorData.details}` : ''}`);
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Error uploading image. Please try again.');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const removeFeaturedImage = () => {
+    setFormData(prev => ({ ...prev, featured_image: null }));
+  };
+
+  const handleContentImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Get current cursor position before upload
+    if (textareaRef.current) {
+      setCursorPosition(textareaRef.current.selectionStart);
+    }
+
+    await uploadImageFile(file);
+    // Reset file input
+    event.target.value = '';
+  };
+
+  const uploadImageFile = async (file: File) => {
+    setUploadingContentImage(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', 'article');
+
+      const response = await fetch('/api/upload/image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Generate markdown image syntax
+        const imageMarkdown = `\n\n![${file.name.replace(/\.[^/.]+$/, "")}](${data.url})\n\n`;
+        
+        // Insert at cursor position
+        setFormData(prev => ({ 
+          ...prev, 
+          content: prev.content.slice(0, cursorPosition) + imageMarkdown + prev.content.slice(cursorPosition)
+        }));
+        
+        // Update cursor position to after the inserted image
+        const newCursorPosition = cursorPosition + imageMarkdown.length;
+        setCursorPosition(newCursorPosition);
+        
+        // Focus textarea and set cursor position
+        setTimeout(() => {
+          if (textareaRef.current) {
+            textareaRef.current.focus();
+            textareaRef.current.setSelectionRange(newCursorPosition, newCursorPosition);
+          }
+        }, 100);
+        
+        // Show success message
+        alert(`Image uploaded and inserted at cursor position!`);
+      } else {
+        const errorData = await response.json();
+        console.error('Upload error details:', errorData);
+        alert(`Error uploading image: ${errorData.error}${errorData.details ? ` - ${errorData.details}` : ''}`);
+      }
+    } catch (error) {
+      console.error('Error uploading content image:', error);
+      alert('Error uploading image. Please try again.');
+    } finally {
+      setUploadingContentImage(false);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    
+    // Get cursor position from textarea if available
+    if (textareaRef.current) {
+      setCursorPosition(textareaRef.current.selectionStart);
+    }
+    
+    const files = Array.from(e.dataTransfer.files);
+    const imageFiles = files.filter(file => file.type.startsWith('image/'));
+    
+    if (imageFiles.length > 0) {
+      // Upload the first image file
+      uploadImageFile(imageFiles[0]);
+    }
+  };
+
+  // Simple markdown to HTML conversion for preview
+  const convertMarkdownToHtml = (markdown: string): string => {
+    return markdown
+      .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" class="w-full max-w-2xl mx-auto my-6 rounded-lg shadow-sm" />')
+      .replace(/^# (.*$)/gm, '<h1 class="text-3xl font-bold my-4">$1</h1>')
+      .replace(/^## (.*$)/gm, '<h2 class="text-2xl font-bold my-3">$1</h2>')
+      .replace(/^### (.*$)/gm, '<h3 class="text-xl font-bold my-2">$1</h3>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary hover:underline" target="_blank" rel="noopener noreferrer">$1</a>')
+      .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre class="bg-muted p-4 rounded-lg overflow-x-auto my-4"><code>$2</code></pre>')
+      .replace(/`([^`]+)`/g, '<code class="bg-muted px-2 py-1 rounded text-sm">$1</code>')
+      .replace(/^\* (.+)$/gm, '<li>$1</li>')
+      .replace(/^- (.+)$/gm, '<li>$1</li>')
+      .replace(/(<li>.*<\/li>)/gs, '<ul class="list-disc pl-6 my-4">$1</ul>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/^(.*)$/gm, '<p>$1</p>')
+      .replace(/<p><\/p>/g, '')
+      .replace(/<p>(<h[1-6].*<\/h[1-6]>)<\/p>/g, '$1')
+      .replace(/<p>(<pre.*<\/pre>)<\/p>/gs, '$1')
+      .replace(/<p>(<ul.*<\/ul>)<\/p>/gs, '$1')
+      .replace(/<p>(<img.*\/>)<\/p>/g, '<div class="text-center my-6">$1</div>');
   };
 
   const validateForm = () => {
@@ -319,26 +480,101 @@ export function ArticleEditor({ mode, articleId }: ArticleEditorProps) {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg">Content</CardTitle>
-                    <div className="text-sm text-muted-foreground">
-                      {formData.reading_time} min read
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleContentImageUpload}
+                        className="hidden"
+                        id="content-image-upload"
+                        disabled={uploadingContentImage}
+                      />
+                      <label htmlFor="content-image-upload">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="cursor-pointer"
+                          disabled={uploadingContentImage}
+                          asChild
+                        >
+                          <span>
+                            {uploadingContentImage ? (
+                              <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2" />
+                                Uploading...
+                              </>
+                            ) : (
+                              <>
+                                <FileImage className="h-4 w-4 mr-2" />
+                                Add Image
+                              </>
+                            )}
+                          </span>
+                        </Button>
+                      </label>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowPreview(!showPreview)}
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        {showPreview ? 'Edit' : 'Preview'}
+                      </Button>
+                      <div className="text-sm text-muted-foreground">
+                        {formData.reading_time} min read
+                      </div>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <textarea
-                    value={formData.content}
-                    onChange={(e) => handleInputChange('content', e.target.value)}
-                    rows={20}
-                    className={`w-full px-3 py-2 bg-input border ${
-                      errors.content ? 'border-destructive' : 'border-border'
-                    } rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none font-mono`}
-                    placeholder="Write your article content in Markdown format...
+                  {showPreview ? (
+                    <div className="border border-border rounded-md p-4 min-h-[500px] bg-background">
+                      <div 
+                        className="prose prose-sm max-w-none dark:prose-invert prose-headings:font-bold prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground"
+                        dangerouslySetInnerHTML={{ __html: convertMarkdownToHtml(formData.content) }}
+                      />
+                      {!formData.content.trim() && (
+                        <div className="text-muted-foreground italic">Preview will appear here as you write...</div>
+                      )}
+                    </div>
+                  ) : (
+                    <div
+                      className={`relative ${isDragOver ? 'ring-2 ring-primary ring-offset-2' : ''}`}
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                    >
+                      <textarea
+                        ref={textareaRef}
+                        value={formData.content}
+                        onChange={(e) => handleInputChange('content', e.target.value)}
+                        onSelect={(e) => {
+                          const target = e.target as HTMLTextAreaElement;
+                          setCursorPosition(target.selectionStart);
+                        }}
+                        onClick={(e) => {
+                          const target = e.target as HTMLTextAreaElement;
+                          setCursorPosition(target.selectionStart);
+                        }}
+                        onKeyUp={(e) => {
+                          const target = e.target as HTMLTextAreaElement;
+                          setCursorPosition(target.selectionStart);
+                        }}
+                        rows={20}
+                        className={`w-full px-3 py-2 bg-input border ${
+                          errors.content ? 'border-destructive' : 'border-border'
+                        } rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none font-mono`}
+                        placeholder="Write your article content in Markdown format...
 
 # Main Heading
 
 ## Subheading
 
 Your content here...
+
+You can also drag and drop images here or click 'Add Image' button above.
 
 ```javascript
 // Code blocks supported
@@ -347,12 +583,24 @@ const example = 'hello world';
 
 - Bullet points
 - Are supported too"
-                  />
+                      />
+                      {isDragOver && (
+                        <div className="absolute inset-0 bg-primary/10 border-2 border-dashed border-primary rounded-md flex items-center justify-center">
+                          <div className="text-center">
+                            <FileImage className="h-12 w-12 text-primary mx-auto mb-2" />
+                            <p className="text-primary font-medium">Drop image here to upload</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                   {errors.content && (
                     <p className="text-sm text-destructive mt-1">{errors.content}</p>
                   )}
                   <div className="mt-2 text-xs text-muted-foreground">
-                    Markdown formatting supported. Use # for headings, ** for bold, ``` for code blocks.
+                    <strong>Markdown formatting supported:</strong> Use # for headings, ** for bold, ``` for code blocks.
+                    <br />
+                    <strong>Images:</strong> Click "Add Image" or drag & drop images here. They'll be inserted at your cursor position.
                   </div>
                 </CardContent>
               </Card>
@@ -393,6 +641,84 @@ const example = 'hello world';
                         <span className="text-sm">Published</span>
                       </label>
                     </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Featured Image */}
+              <Card className="modern-card">
+                <CardHeader>
+                  <CardTitle className="text-lg">Featured Image</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {formData.featured_image ? (
+                      <div className="space-y-3">
+                        <div className="aspect-video bg-muted rounded-lg overflow-hidden">
+                          <img
+                            src={formData.featured_image}
+                            alt="Featured image preview"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={removeFeaturedImage}
+                          className="w-full"
+                        >
+                          <X className="h-4 w-4 mr-2" />
+                          Remove Image
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <div className="aspect-video bg-muted rounded-lg border-2 border-dashed border-border flex items-center justify-center">
+                          <div className="text-center">
+                            <ImageIcon className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
+                            <p className="text-sm text-muted-foreground">No featured image</p>
+                          </div>
+                        </div>
+                        <div>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="hidden"
+                            id="featured-image-upload"
+                            disabled={uploadingImage}
+                          />
+                          <label htmlFor="featured-image-upload">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="w-full cursor-pointer"
+                              disabled={uploadingImage}
+                              asChild
+                            >
+                              <span>
+                                {uploadingImage ? (
+                                  <>
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2" />
+                                    Uploading...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Upload className="h-4 w-4 mr-2" />
+                                    Upload Image
+                                  </>
+                                )}
+                              </span>
+                            </Button>
+                          </label>
+                        </div>
+                      </div>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      Recommended: 1200x630px (16:9 ratio). Max 5MB.
+                    </p>
                   </div>
                 </CardContent>
               </Card>
