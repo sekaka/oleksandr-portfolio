@@ -107,17 +107,6 @@ export function Header() {
               Home
             </Link>
             <Link 
-              href="/about" 
-              className={`block px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                isActive('/about') 
-                  ? 'bg-primary/10 text-primary' 
-                  : 'text-foreground/80 hover:text-primary hover:bg-primary/5'
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              About
-            </Link>
-            <Link 
               href="/blog" 
               className={`block px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                 isActive('/blog') 
