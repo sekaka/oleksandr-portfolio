@@ -134,6 +134,30 @@ export function BlogPost({ article }: BlogPostProps) {
             <div 
               dangerouslySetInnerHTML={{ __html: convertMarkdownToHtml(article.content) }} 
             />
+            <script dangerouslySetInnerHTML={{
+              __html: `
+                function toggleCodeBlock(codeId) {
+                  const codeBlock = document.querySelector('[data-code-id="' + codeId + '"]');
+                  const pre = codeBlock.querySelector('pre');
+                  const button = codeBlock.querySelector('.toggle-text');
+                  const gradient = codeBlock.querySelector('.bg-gradient-to-t');
+                  
+                  if (pre.style.maxHeight === 'none') {
+                    // Collapse
+                    pre.style.maxHeight = '300px';
+                    pre.style.overflowY = 'hidden';
+                    button.textContent = 'Show More';
+                    gradient.style.display = 'flex';
+                  } else {
+                    // Expand
+                    pre.style.maxHeight = 'none';
+                    pre.style.overflowY = 'visible';
+                    button.textContent = 'Show Less';
+                    gradient.style.display = 'none';
+                  }
+                }
+              `
+            }} />
           </div>
 
           {/* Article Footer */}
@@ -184,15 +208,26 @@ function convertMarkdownToHtml(markdown: string): string {
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
     // Convert links
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary hover:underline" target="_blank" rel="noopener noreferrer">$1</a>')
-    // Convert code blocks with highlight.js support
+    // Convert code blocks with highlight.js support and show more functionality
     .replace(/```(\w+)?\n([\s\S]*?)```/g, (_match, language, code) => {
+      const lines = code.trim().split('\n');
+      const isLong = lines.length > 15;
+      const codeId = `code-${Math.random().toString(36).substring(2, 11)}`;
+      
       // Use language class for highlight.js, or nohighlight for plain text
       const langClass = language ? `language-${language.toLowerCase()}` : 'nohighlight';
       
       return `
-        <div class="relative bg-gray-900 rounded-lg my-4">
+        <div class="relative bg-gray-900 rounded-lg my-4 code-block" data-code-id="${codeId}">
           ${language ? `<div class="absolute top-3 left-3 text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded font-mono z-10">${language}</div>` : ''}
-          <pre class="overflow-x-auto text-sm font-mono p-4" style="line-height: 1.4;"><code class="${langClass} block whitespace-pre text-gray-100">${escapeHtml(code.trim())}</code></pre>
+          <pre class="overflow-x-auto text-sm font-mono p-4 transition-all duration-300" style="line-height: 1.4; ${isLong ? 'max-height: 300px; overflow-y: hidden;' : ''}"><code class="${langClass} block whitespace-pre text-gray-100">${escapeHtml(code.trim())}</code></pre>
+          ${isLong ? `
+            <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-900 to-transparent flex items-end justify-center pb-2">
+              <button class="text-xs text-gray-400 hover:text-gray-200 transition-colors" onclick="toggleCodeBlock('${codeId}')">
+                <span class="toggle-text">Show More</span>
+              </button>
+            </div>
+          ` : ''}
         </div>
       `;
     })
