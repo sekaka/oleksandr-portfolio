@@ -256,7 +256,7 @@ export function ArticlesManager() {
                             </span>
                           )}
                           <span>
-                            {article.categories.map(cat => cat.name).join(', ')}
+                            {article.tags?.join(', ') || 'No tags'}
                           </span>
                         </div>
                       </div>

@@ -42,7 +42,8 @@ CREATE TABLE IF NOT EXISTS articles (
   reading_time INTEGER,
   seo_title TEXT,
   seo_description TEXT,
-  seo_keywords TEXT[]
+  seo_keywords TEXT[],
+  tags TEXT[]
 );
 
 -- Article categories junction table

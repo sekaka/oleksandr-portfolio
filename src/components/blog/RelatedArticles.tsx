@@ -84,17 +84,16 @@ export function RelatedArticles({ currentArticle }: RelatedArticlesProps) {
                         <div className="text-4xl text-primary/30">📝</div>
                       </div>
                     )}
-                    <div className="absolute top-3 left-3">
-                      {article.categories.slice(0, 1).map((category) => (
+                    {article.tags && article.tags.length > 0 && (
+                      <div className="absolute top-3 left-3">
                         <Badge 
-                          key={category.id} 
                           variant="secondary" 
                           className="bg-background/90 backdrop-blur-sm text-xs"
                         >
-                          {category.name}
+                          {article.tags[0]}
                         </Badge>
-                      ))}
-                    </div>
+                      </div>
+                    )}
                   </div>
                   
                   <CardHeader className="pb-3">

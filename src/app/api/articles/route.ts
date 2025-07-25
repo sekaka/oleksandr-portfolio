@@ -8,19 +8,14 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     
     const status = searchParams.get('status');
-    const category = searchParams.get('category');
+    const tag = searchParams.get('tag');
     const search = searchParams.get('search');
     const limit = parseInt(searchParams.get('limit') || '10');
     const offset = parseInt(searchParams.get('offset') || '0');
 
     let query = supabase
       .from('articles')
-      .select(`
-        *,
-        categories:article_categories(
-          category:categories(*)
-        )
-      `)
+      .select('*')
       .order('published_at', { ascending: false });
 
     // Apply filters
@@ -30,6 +25,10 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       query = query.or(`title.ilike.%${search}%,excerpt.ilike.%${search}%`);
+    }
+
+    if (tag) {
+      query = query.contains('tags', [tag]);
     }
 
     // Apply pagination
@@ -45,11 +44,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Transform the data to match our Article type
-    const transformedArticles = articles?.map(article => ({
-      ...article,
-      categories: article.categories?.map((ac: { category: unknown }) => ac.category) || []
-    })) || [];
+    // No need to transform data since tags is already a column
+    const transformedArticles = articles || [];
 
     return NextResponse.json(transformedArticles);
   } catch (error) {
@@ -77,11 +73,11 @@ export async function POST(request: NextRequest) {
       meta_description,
       featured_image,
       reading_time,
-      categories = []
+      tags = []
     } = body;
 
     // Log the incoming data for debugging
-    console.log('Creating article with data:', { title, slug, excerpt: excerpt?.substring(0, 50), content: content?.substring(0, 50), status, categories });
+    console.log('Creating article with data:', { title, slug, excerpt: excerpt?.substring(0, 50), content: content?.substring(0, 50), status, tags });
 
     // Validate required fields
     if (!title || !slug || !excerpt || !content) {
@@ -118,6 +114,7 @@ export async function POST(request: NextRequest) {
         seo_description: meta_description || excerpt,
         featured_image,
         reading_time: reading_time || 5,
+        tags: tags || [],
         published_at: status === 'published' ? new Date().toISOString() : null
       })
       .select()
@@ -135,22 +132,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Add categories if provided
-    if (categories.length > 0) {
-      const categoryLinks = categories.map((categoryId: string) => ({
-        article_id: article.id,
-        category_id: categoryId
-      }));
-
-      const { error: categoryError } = await supabase
-        .from('article_categories')
-        .insert(categoryLinks);
-
-      if (categoryError) {
-        console.error('Category linking error:', categoryError);
-        // Continue anyway, don't fail the whole operation
-      }
-    }
+    // Tags are now stored directly in the articles table, no additional operations needed
 
     return NextResponse.json(article, { status: 201 });
   } catch (error) {

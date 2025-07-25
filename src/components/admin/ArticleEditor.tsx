@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { TagsInput } from '@/components/ui/tags-input';
 import { 
   ArrowLeft,
   Save,
@@ -34,7 +35,7 @@ interface ArticleFormData {
   meta_description: string;
   status: 'draft' | 'published';
   featured_image: string | null;
-  categories: string[];
+  tags: string[];
   reading_time: number;
 }
 
@@ -49,11 +50,10 @@ export function ArticleEditor({ mode, articleId }: ArticleEditorProps) {
     meta_description: '',
     status: 'draft',
     featured_image: null,
-    categories: [],
+    tags: [],
     reading_time: 5
   });
 
-  const [availableCategories, setAvailableCategories] = useState<Array<{ id: string; name: string; slug: string }>>([]);
 
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -64,21 +64,6 @@ export function ArticleEditor({ mode, articleId }: ArticleEditorProps) {
   const [cursorPosition, setCursorPosition] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Fetch categories
-  useEffect(() => {
-    async function fetchCategories() {
-      try {
-        const response = await fetch('/api/categories');
-        if (response.ok) {
-          const data = await response.json();
-          setAvailableCategories(data);
-        }
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    }
-    fetchCategories();
-  }, []);
 
   // Load existing article for editing
   useEffect(() => {
@@ -97,7 +82,7 @@ export function ArticleEditor({ mode, articleId }: ArticleEditorProps) {
               meta_description: article.seo_description || article.excerpt,
               status: article.status,
               featured_image: article.featured_image,
-              categories: article.categories.map((cat: { id: string }) => cat.id),
+              tags: article.tags || [],
               reading_time: article.reading_time
             });
           }
@@ -144,13 +129,11 @@ export function ArticleEditor({ mode, articleId }: ArticleEditorProps) {
     }
   };
 
-  const toggleCategory = (categoryId: string) => {
-    setFormData(prev => ({
-      ...prev,
-      categories: prev.categories.includes(categoryId)
-        ? prev.categories.filter(id => id !== categoryId)
-        : [...prev.categories, categoryId]
-    }));
+  const handleTagsChange = (tags: string[]) => {
+    setFormData(prev => ({ ...prev, tags }));
+    if (errors.tags) {
+      setErrors(prev => ({ ...prev, tags: '' }));
+    }
   };
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -312,7 +295,7 @@ export function ArticleEditor({ mode, articleId }: ArticleEditorProps) {
     if (!formData.slug.trim()) newErrors.slug = 'Slug is required';
     if (!formData.excerpt.trim()) newErrors.excerpt = 'Excerpt is required';
     if (!formData.content.trim()) newErrors.content = 'Content is required';
-    if (formData.categories.length === 0) newErrors.categories = 'At least one category is required';
+    if (formData.tags.length === 0) newErrors.tags = 'At least one tag is required';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -353,9 +336,6 @@ export function ArticleEditor({ mode, articleId }: ArticleEditorProps) {
     }
   };
 
-  const selectedCategoryNames = formData.categories
-    .map(id => availableCategories.find(cat => cat.id === id)?.name)
-    .filter(Boolean);
 
   return (
     <div className="min-h-screen bg-background">
@@ -723,37 +703,21 @@ const example = 'hello world';
                 </CardContent>
               </Card>
 
-              {/* Categories */}
+              {/* Tags */}
               <Card className="modern-card">
                 <CardHeader>
-                  <CardTitle className="text-lg">Categories</CardTitle>
+                  <CardTitle className="text-lg">Tags</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {selectedCategoryNames.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {selectedCategoryNames.map((name) => (
-                          <Badge key={name} variant="secondary">
-                            {name}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-                    
-                    <div className="space-y-2">
-                      {availableCategories.map((category) => (
-                        <label key={category.id} className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={formData.categories.includes(category.id)}
-                            onChange={() => toggleCategory(category.id)}
-                          />
-                          <span className="text-sm">{category.name}</span>
-                        </label>
-                      ))}
-                    </div>
-                    {errors.categories && (
-                      <p className="text-sm text-destructive">{errors.categories}</p>
+                    <TagsInput
+                      value={formData.tags}
+                      onChange={handleTagsChange}
+                      placeholder="React, Next.js, TypeScript"
+                      disabled={saving}
+                    />
+                    {errors.tags && (
+                      <p className="text-sm text-destructive">{errors.tags}</p>
                     )}
                   </div>
                 </CardContent>

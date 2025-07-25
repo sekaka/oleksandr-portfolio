@@ -15,12 +15,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     const { data: article, error } = await supabase
       .from('articles')
-      .select(`
-        *,
-        categories:article_categories(
-          category:categories(*)
-        )
-      `)
+      .select('*')
       .eq('slug', slug)
       .eq('status', 'published') // Only return published articles for public access
       .single();
@@ -44,7 +39,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     // Transform the data
     const transformedArticle = {
       ...article,
-      categories: article.categories?.map((ac: { category: unknown }) => ac.category) || [],
       view_count: (article.view_count || 0) + 1
     };
 

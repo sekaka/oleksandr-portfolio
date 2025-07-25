@@ -15,12 +15,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     const { data: article, error } = await supabase
       .from('articles')
-      .select(`
-        *,
-        categories:article_categories(
-          category:categories(*)
-        )
-      `)
+      .select('*')
       .eq('id', id)
       .single();
 
@@ -32,10 +27,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Transform the data
+    // Transform the data (no transformation needed for tags)
     const transformedArticle = {
-      ...article,
-      categories: article.categories?.map((ac: { category: unknown }) => ac.category) || []
+      ...article
     };
 
     return NextResponse.json(transformedArticle);
@@ -65,7 +59,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       meta_description,
       featured_image,
       reading_time,
-      categories = []
+      tags = []
     } = body;
 
     // Validate required fields
@@ -102,6 +96,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       seo_description: meta_description || excerpt,
       featured_image,
       reading_time: reading_time || 5,
+      tags: tags || [],
       updated_at: new Date().toISOString()
     };
 
@@ -135,29 +130,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Update categories
-    // First, remove existing category associations
-    await supabase
-      .from('article_categories')
-      .delete()
-      .eq('article_id', id);
-
-    // Add new categories if provided
-    if (categories.length > 0) {
-      const categoryLinks = categories.map((categoryId: string) => ({
-        article_id: id,
-        category_id: categoryId
-      }));
-
-      const { error: categoryError } = await supabase
-        .from('article_categories')
-        .insert(categoryLinks);
-
-      if (categoryError) {
-        console.error('Category linking error:', categoryError);
-        // Continue anyway
-      }
-    }
+    // Tags are now stored directly in the articles table, no additional operations needed
 
     return NextResponse.json(article);
   } catch (error) {
@@ -175,11 +148,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     const { id } = await params;
     const supabase = await createSupabaseAdmin();
 
-    // Delete category associations first (foreign key constraint)
-    await supabase
-      .from('article_categories')
-      .delete()
-      .eq('article_id', id);
+    // No need to delete category associations since we're using tags column now
 
     // Delete the article
     const { error } = await supabase

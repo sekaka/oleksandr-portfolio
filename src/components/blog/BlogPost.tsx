@@ -57,18 +57,20 @@ export function BlogPost({ article }: BlogPostProps) {
         <div className="max-w-4xl mx-auto">
           {/* Article Header */}
           <header className="mb-12">
-            {/* Categories */}
-            <div className="flex flex-wrap gap-2 mb-6">
-              {article.categories.map((category) => (
-                <Badge 
-                  key={category.id} 
-                  variant="secondary" 
-                  className="bg-primary/10 text-primary border-primary/20"
-                >
-                  {category.name}
-                </Badge>
-              ))}
-            </div>
+            {/* Tags */}
+            {article.tags && article.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-6">
+                {article.tags.map((tag) => (
+                  <Badge 
+                    key={tag} 
+                    variant="secondary" 
+                    className="bg-primary/10 text-primary border-primary/20"
+                  >
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            )}
             
             {/* Title */}
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">

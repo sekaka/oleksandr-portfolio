@@ -15,7 +15,7 @@ export interface Article {
   seo_title?: string;
   seo_description?: string;
   seo_keywords?: string[];
-  categories?: Category[];
+  tags: string[];
 }
 
 export interface Category {

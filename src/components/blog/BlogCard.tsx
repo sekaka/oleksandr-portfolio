@@ -58,11 +58,6 @@ export function BlogCard({ article, index }: BlogCardProps) {
             <div className="flex-1 space-y-2 min-w-0">
               {/* Author and Date */}
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <div className="w-5 h-5 bg-gradient-to-br from-primary/30 to-primary/10 rounded-full flex items-center justify-center text-xs font-medium text-primary">
-                  {article.categories[0]?.name?.[0] || 'A'}
-                </div>
-                <span className="font-medium truncate">{article.categories[0]?.name || 'Article'}</span>
-                <span className="hidden sm:inline">·</span>
                 <span className="hidden sm:inline">{formatDate(article.published_at)}</span>
               </div>
               
@@ -86,15 +81,16 @@ export function BlogCard({ article, index }: BlogCardProps) {
                     {formatViews(article.view_count)}
                   </span>
                 </div>
-                {article.categories.length > 1 && (
-                  <div className="hidden md:flex gap-1">
-                    {article.categories.slice(1, 3).map((category) => (
+                {/* Tags */}
+                {article.tags && article.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {article.tags.map((tag) => (
                       <Badge 
-                        key={category.id} 
-                        variant="outline" 
-                        className="text-xs bg-muted/50 border-muted text-muted-foreground hover:bg-muted"
+                        key={tag} 
+                        variant="secondary" 
+                        className="bg-primary/10 text-primary border-primary/20 text-xs px-2 py-0.5"
                       >
-                        {category.name}
+                        {tag}
                       </Badge>
                     ))}
                   </div>
