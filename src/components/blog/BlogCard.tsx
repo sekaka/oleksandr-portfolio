@@ -52,52 +52,60 @@ export function BlogCard({ article, index }: BlogCardProps) {
       }}
     >
       <Link href={`/blog/${article.slug}`} className="block group">
-        <div className="flex gap-6 py-6 border-b border-border/50 hover:bg-muted/30 transition-colors -mx-4 px-4 rounded-lg">
-          {/* Content */}
-          <div className="flex-1 min-w-0">
-            {/* Categories */}
-            <div className="flex gap-2 mb-3">
-              {article.categories.map((category) => (
-                <Badge 
-                  key={category.id} 
-                  variant="outline" 
-                  className="text-xs bg-primary/5 border-primary/20 text-primary hover:bg-primary/10"
-                >
-                  {category.name}
-                </Badge>
-              ))}
+        <div className="py-6 md:py-8 border-b border-border/30 hover:bg-muted/20 transition-all duration-200 -mx-4 md:-mx-6 px-4 md:px-6">
+          <div className="flex gap-4 md:gap-6">
+            {/* Content */}
+            <div className="flex-1 space-y-2 min-w-0">
+              {/* Author and Date */}
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="w-5 h-5 bg-gradient-to-br from-primary/30 to-primary/10 rounded-full flex items-center justify-center text-xs font-medium text-primary">
+                  {article.categories[0]?.name?.[0] || 'A'}
+                </div>
+                <span className="font-medium truncate">{article.categories[0]?.name || 'Article'}</span>
+                <span className="hidden sm:inline">·</span>
+                <span className="hidden sm:inline">{formatDate(article.published_at)}</span>
+              </div>
+              
+              {/* Title */}
+              <h2 className="text-lg md:text-xl font-bold leading-tight group-hover:text-primary transition-colors line-clamp-2 text-foreground">
+                {article.title}
+              </h2>
+              
+              {/* Excerpt */}
+              <p className="text-muted-foreground leading-relaxed line-clamp-2 text-sm md:text-base">
+                {article.excerpt}
+              </p>
+              
+              {/* Meta Information */}
+              <div className="flex items-center justify-between pt-2">
+                <div className="flex items-center gap-3 md:gap-6 text-sm text-muted-foreground">
+                  <span className="block sm:hidden">{formatDate(article.published_at)}</span>
+                  <span>{article.reading_time} min read</span>
+                  <span className="flex items-center gap-1">
+                    <Eye className="h-3 w-3" />
+                    {formatViews(article.view_count)}
+                  </span>
+                </div>
+                {article.categories.length > 1 && (
+                  <div className="hidden md:flex gap-1">
+                    {article.categories.slice(1, 3).map((category) => (
+                      <Badge 
+                        key={category.id} 
+                        variant="outline" 
+                        className="text-xs bg-muted/50 border-muted text-muted-foreground hover:bg-muted"
+                      >
+                        {category.name}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
             
-            {/* Title */}
-            <h2 className="text-xl font-bold leading-snug group-hover:text-primary transition-colors mb-2 line-clamp-2">
-              {article.title}
-            </h2>
-            
-            {/* Excerpt */}
-            <p className="text-muted-foreground leading-relaxed mb-4 line-clamp-2 text-sm">
-              {article.excerpt}
-            </p>
-            
-            {/* Meta Information */}
-            <div className="flex items-center gap-4 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
-                {formatDate(article.published_at)}
-              </span>
-              <span className="flex items-center gap-1">
-                <Clock className="h-3 w-3" />
-                {article.reading_time} min read
-              </span>
-              <span className="flex items-center gap-1">
-                <Eye className="h-3 w-3" />
-                {formatViews(article.view_count)} views
-              </span>
+            {/* Thumbnail */}
+            <div className="flex-shrink-0 w-20 h-20 md:w-28 md:h-28 bg-gradient-to-br from-muted to-muted/50 rounded-md flex items-center justify-center">
+              <div className="text-2xl md:text-3xl text-muted-foreground/40">📄</div>
             </div>
-          </div>
-          
-          {/* Thumbnail */}
-          <div className="flex-shrink-0 w-24 h-24 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg flex items-center justify-center">
-            <div className="text-2xl text-primary/40">📝</div>
           </div>
         </div>
       </Link>

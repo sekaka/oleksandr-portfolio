@@ -31,25 +31,25 @@ export function BlogList() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="animate-pulse">
-            <div className="flex gap-6 py-6 border-b border-border/50">
-              <div className="flex-1 min-w-0">
-                <div className="flex gap-2 mb-3">
-                  <div className="h-5 bg-muted rounded w-16"></div>
-                  <div className="h-5 bg-muted rounded w-20"></div>
+      <div>
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="animate-pulse py-8 border-b border-border/30">
+            <div className="flex gap-6">
+              <div className="flex-1 space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 bg-muted rounded-full"></div>
+                  <div className="h-4 bg-muted rounded w-20"></div>
+                  <div className="h-4 bg-muted rounded w-16"></div>
                 </div>
-                <div className="h-6 bg-muted rounded w-3/4 mb-2"></div>
-                <div className="h-4 bg-muted rounded w-full mb-1"></div>
-                <div className="h-4 bg-muted rounded w-2/3 mb-4"></div>
-                <div className="flex gap-4">
-                  <div className="h-3 bg-muted rounded w-24"></div>
+                <div className="h-6 bg-muted rounded w-3/4"></div>
+                <div className="h-4 bg-muted rounded w-full"></div>
+                <div className="h-4 bg-muted rounded w-2/3"></div>
+                <div className="flex gap-4 pt-2">
                   <div className="h-3 bg-muted rounded w-20"></div>
                   <div className="h-3 bg-muted rounded w-16"></div>
                 </div>
               </div>
-              <div className="w-24 h-24 bg-muted rounded-lg flex-shrink-0"></div>
+              <div className="w-28 h-28 bg-muted rounded-md flex-shrink-0"></div>
             </div>
           </div>
         ))}
@@ -74,17 +74,10 @@ export function BlogList() {
   }
 
   return (
-    <div className="space-y-0">
+    <div className="divide-y-0">
       {articles.map((article, index) => (
         <BlogCard key={article.id} article={article} index={index} />
       ))}
-      
-      {/* Load More Button - for future pagination */}
-      <div className="text-center pt-8">
-        <button className="px-6 py-3 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg font-medium transition-colors">
-          Load More Articles
-        </button>
-      </div>
     </div>
   );
 }

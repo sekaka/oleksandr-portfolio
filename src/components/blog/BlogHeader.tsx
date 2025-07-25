@@ -1,6 +1,6 @@
 export function BlogHeader() {
   return (
-    <section className="gradient-bg py-20 lg:py-24">
+    <section className="gradient-bg py-10 lg:py-10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 leading-tight">
@@ -10,20 +10,6 @@ export function BlogHeader() {
             In-depth articles about modern web development, architecture decisions, 
             and technical insights from the field.
           </p>
-          <div className="flex flex-wrap justify-center gap-3 text-sm text-muted-foreground">
-            <span className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-primary rounded-full"></span>
-              Framework-agnostic insights
-            </span>
-            <span className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-primary rounded-full"></span>
-              Real-world solutions
-            </span>
-            <span className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-primary rounded-full"></span>
-              Best practices
-            </span>
-          </div>
         </div>
       </div>
     </section>
