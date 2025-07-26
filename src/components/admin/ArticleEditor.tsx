@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { TagsInput } from '@/components/ui/tags-input';
+import DOMPurify from 'dompurify';
 import { 
   ArrowLeft,
   Save,
@@ -306,8 +307,20 @@ export function ArticleEditor({ mode, articleId }: ArticleEditorProps) {
 
     setSaving(true);
     try {
-      const dataToSave = {
-        ...formData,
+      // Sanitize all input data before sending to server
+      const sanitizedData = {
+        title: DOMPurify.sanitize(formData.title, { ALLOWED_TAGS: [] }),
+        slug: formData.slug.replace(/[^a-z0-9\-]/g, ''),
+        excerpt: DOMPurify.sanitize(formData.excerpt, { ALLOWED_TAGS: [] }),
+        content: DOMPurify.sanitize(formData.content, {
+          ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'strong', 'em', 'a', 'ul', 'ol', 'li', 'code', 'pre', 'img', 'blockquote'],
+          ALLOWED_ATTR: ['href', 'src', 'alt', 'target', 'rel']
+        }),
+        meta_title: DOMPurify.sanitize(formData.meta_title, { ALLOWED_TAGS: [] }),
+        meta_description: DOMPurify.sanitize(formData.meta_description, { ALLOWED_TAGS: [] }),
+        featured_image: formData.featured_image,
+        reading_time: formData.reading_time,
+        tags: formData.tags.map(tag => DOMPurify.sanitize(tag, { ALLOWED_TAGS: [] })),
         status: publishNow ? 'published' : formData.status
       };
 
@@ -319,7 +332,7 @@ export function ArticleEditor({ mode, articleId }: ArticleEditorProps) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(dataToSave),
+        body: JSON.stringify(sanitizedData),
       });
 
       if (response.ok) {

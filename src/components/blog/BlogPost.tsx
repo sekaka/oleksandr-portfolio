@@ -6,6 +6,7 @@ import { Calendar, Clock, Eye, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
+import DOMPurify from 'dompurify';
 import type { Article } from '@/types/article';
 
 interface BlogPostProps {
@@ -132,31 +133,37 @@ export function BlogPost({ article }: BlogPostProps) {
           {/* Article Content */}
           <div className="prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-code:bg-muted prose-code:px-2 prose-code:py-1 prose-code:rounded prose-pre:bg-muted prose-pre:border">
             <div 
-              dangerouslySetInnerHTML={{ __html: convertMarkdownToHtml(article.content) }} 
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertMarkdownToHtml(article.content), {
+                ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'strong', 'em', 'a', 'ul', 'ol', 'li', 'code', 'pre', 'img', 'div', 'span', 'button'],
+                ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'data-code-id', 'style', 'onclick', 'target', 'rel'],
+                ALLOW_DATA_ATTR: true
+              }) }} 
             />
             <script dangerouslySetInnerHTML={{
-              __html: `
+              __html: DOMPurify.sanitize(`
                 function toggleCodeBlock(codeId) {
                   const codeBlock = document.querySelector('[data-code-id="' + codeId + '"]');
+                  if (!codeBlock) return;
+                  
                   const pre = codeBlock.querySelector('pre');
                   const button = codeBlock.querySelector('.toggle-text');
                   const gradient = codeBlock.querySelector('.bg-gradient-to-t');
                   
+                  if (!pre || !button || !gradient) return;
+                  
                   if (pre.style.maxHeight === 'none') {
-                    // Collapse
                     pre.style.maxHeight = '300px';
                     pre.style.overflowY = 'hidden';
                     button.textContent = 'Show More';
                     gradient.style.display = 'flex';
                   } else {
-                    // Expand
                     pre.style.maxHeight = 'none';
                     pre.style.overflowY = 'visible';
                     button.textContent = 'Show Less';
                     gradient.style.display = 'none';
                   }
                 }
-              `
+              `, { ALLOWED_TAGS: [] })
             }} />
           </div>
 

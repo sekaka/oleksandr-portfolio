@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseAdmin } from '@/lib/supabase-server';
+import DOMPurify from 'isomorphic-dompurify';
 
 interface RouteParams {
   params: Promise<{
@@ -70,11 +71,23 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       );
     }
 
+    // Sanitize content inputs
+    const sanitizedTitle = DOMPurify.sanitize(title, { ALLOWED_TAGS: [] });
+    const sanitizedSlug = slug.replace(/[^a-z0-9\-]/g, '');
+    const sanitizedExcerpt = DOMPurify.sanitize(excerpt, { ALLOWED_TAGS: [] });
+    const sanitizedContent = DOMPurify.sanitize(content, {
+      ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'strong', 'em', 'a', 'ul', 'ol', 'li', 'code', 'pre', 'img', 'blockquote'],
+      ALLOWED_ATTR: ['href', 'src', 'alt', 'target', 'rel']
+    });
+    const sanitizedMetaTitle = meta_title ? DOMPurify.sanitize(meta_title, { ALLOWED_TAGS: [] }) : sanitizedTitle;
+    const sanitizedMetaDescription = meta_description ? DOMPurify.sanitize(meta_description, { ALLOWED_TAGS: [] }) : sanitizedExcerpt;
+    const sanitizedTags = Array.isArray(tags) ? tags.map(tag => DOMPurify.sanitize(tag, { ALLOWED_TAGS: [] })) : [];
+
     // Check if slug conflicts with other articles
     const { data: existingArticle } = await supabase
       .from('articles')
       .select('id')
-      .eq('slug', slug)
+      .eq('slug', sanitizedSlug)
       .neq('id', id)
       .single();
 
@@ -87,16 +100,16 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     // Update the article
     const updateData: Record<string, unknown> = {
-      title,
-      slug,
-      excerpt,
-      content,
+      title: sanitizedTitle,
+      slug: sanitizedSlug,
+      excerpt: sanitizedExcerpt,
+      content: sanitizedContent,
       status,
-      seo_title: meta_title || title,
-      seo_description: meta_description || excerpt,
+      seo_title: sanitizedMetaTitle,
+      seo_description: sanitizedMetaDescription,
       featured_image,
       reading_time: reading_time || 5,
-      tags: tags || [],
+      tags: sanitizedTags,
       updated_at: new Date().toISOString()
     };
 
