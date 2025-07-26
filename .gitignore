@@ -33,8 +33,13 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files (NEVER commit these)
+.env
+.env.local
+.env.production
+.env.development
+.env.staging
+.env.*.local
 
 # vercel
 .vercel
@@ -44,3 +49,24 @@ yarn-error.log*
 next-env.d.ts
 
 # Images are now stored in Supabase Storage, not locally
+
+# Security and sensitive files
+config/secrets.json
+*.key
+*.pem
+*.crt
+certificates/
+secrets/
+.secrets
+backup.sql
+*.backup
+
+# IDE and editor files that might contain sensitive info
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+Thumbs.db
+.DS_Store

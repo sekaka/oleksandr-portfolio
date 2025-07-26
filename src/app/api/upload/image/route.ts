@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseAdmin } from '@/lib/supabase-server';
+import { requireAdmin, createAuthResponse } from '@/lib/auth-middleware';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 
 export async function POST(request: NextRequest) {
+  // Check authentication
+  const { user, error } = await requireAdmin(request);
+  if (error || !user) {
+    return createAuthResponse(error || 'Admin access required', 401);
+  }
+
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
@@ -51,7 +58,7 @@ export async function POST(request: NextRequest) {
     
     // Check if bucket exists first
     const { data: buckets, error: listError } = await supabase.storage.listBuckets();
-    console.log('Available buckets:', buckets?.map(b => b.name));
+    // Check available buckets
     
     if (listError) {
       console.error('Error listing buckets:', listError);

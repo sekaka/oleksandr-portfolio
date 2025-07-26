@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseAdmin } from '@/lib/supabase-server';
+import { requireAdmin, createAuthResponse } from '@/lib/auth-middleware';
 import DOMPurify from 'isomorphic-dompurify';
 
 // GET /api/articles - Get all articles with optional filtering
@@ -60,6 +61,12 @@ export async function GET(request: NextRequest) {
 
 // POST /api/articles - Create new article
 export async function POST(request: NextRequest) {
+  // Check authentication
+  const { user, error } = await requireAdmin(request);
+  if (error || !user) {
+    return createAuthResponse(error || 'Admin access required', 401);
+  }
+
   try {
     const supabase = await createSupabaseAdmin();
     const body = await request.json();
@@ -77,8 +84,7 @@ export async function POST(request: NextRequest) {
       tags = []
     } = body;
 
-    // Log the incoming data for debugging
-    console.log('Creating article with data:', { title, slug, excerpt: excerpt?.substring(0, 50), content: content?.substring(0, 50), status, tags });
+    // Validate incoming data
 
     // Validate required fields
     if (!title || !slug || !excerpt || !content) {

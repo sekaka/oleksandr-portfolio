@@ -2,8 +2,31 @@ import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+// Validate environment variables
+if (!supabaseUrl || supabaseUrl === 'your_supabase_url_here') {
+  throw new Error(
+    'Missing NEXT_PUBLIC_SUPABASE_URL environment variable. ' +
+    'Please set your Supabase URL in .env.local'
+  );
+}
+
+if (!supabaseAnonKey || supabaseAnonKey === 'your_supabase_anon_key_here') {
+  throw new Error(
+    'Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable. ' +
+    'Please set your Supabase anon key in .env.local'
+  );
+}
+
+if (!supabaseServiceRoleKey || supabaseServiceRoleKey === 'your_service_role_key_here') {
+  throw new Error(
+    'Missing SUPABASE_SERVICE_ROLE_KEY environment variable. ' +
+    'Please set your Supabase service role key in .env.local'
+  );
+}
 
 // Server-side Supabase client
 export const createSupabaseServerClient = async () =>
@@ -29,7 +52,7 @@ export const createSupabaseServerClient = async () =>
 export const createSupabaseAdmin = () =>
   createClient(
     supabaseUrl,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    supabaseServiceRoleKey,
     {
       auth: {
         autoRefreshToken: false,

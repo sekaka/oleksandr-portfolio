@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseAdmin } from '@/lib/supabase-server';
+import { requireAdmin, createAuthResponse } from '@/lib/auth-middleware';
 
 export async function GET(
   request: NextRequest,
@@ -32,6 +33,12 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  // Check authentication
+  const { user, error } = await requireAdmin(request);
+  if (error || !user) {
+    return createAuthResponse(error || 'Admin access required', 401);
+  }
+
   try {
     const supabase = await createSupabaseAdmin();
     const body = await request.json();
@@ -80,6 +87,12 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  // Check authentication
+  const { user, error } = await requireAdmin(request);
+  if (error || !user) {
+    return createAuthResponse(error || 'Admin access required', 401);
+  }
+
   try {
     const supabase = await createSupabaseAdmin();
     const { error } = await supabase

@@ -1,8 +1,15 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseAdmin } from '@/lib/supabase-server';
+import { requireAdmin, createAuthResponse } from '@/lib/auth-middleware';
 
 // POST /api/seed - Seed database with sample data
-export async function POST() {
+export async function POST(request: NextRequest) {
+  // Check authentication
+  const { user, error } = await requireAdmin(request);
+  if (error || !user) {
+    return createAuthResponse(error || 'Admin access required', 401);
+  }
+
   try {
     const supabase = await createSupabaseAdmin();
 

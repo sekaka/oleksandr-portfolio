@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 import { CreateProjectData } from '@/types/project';
+import { requireAdmin, createAuthResponse } from '@/lib/auth-middleware';
 
 export async function GET() {
   try {
@@ -24,6 +25,12 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  // Check authentication
+  const { user, error } = await requireAdmin(request);
+  if (error || !user) {
+    return createAuthResponse(error || 'Admin access required', 401);
+  }
+
   try {
     const supabase = await createSupabaseServerClient();
     const body = await request.json();

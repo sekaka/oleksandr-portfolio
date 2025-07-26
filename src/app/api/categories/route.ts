@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseAdmin } from '@/lib/supabase-server';
+import { requireAdmin, createAuthResponse } from '@/lib/auth-middleware';
 
 // GET /api/categories - Get all categories with article counts
 export async function GET(request: NextRequest) {
@@ -40,6 +41,12 @@ export async function GET(request: NextRequest) {
 
 // POST /api/categories - Create new category
 export async function POST(request: NextRequest) {
+  // Check authentication
+  const { user, error } = await requireAdmin(request);
+  if (error || !user) {
+    return createAuthResponse(error || 'Admin access required', 401);
+  }
+
   try {
     const supabase = await createSupabaseAdmin();
     const body = await request.json();

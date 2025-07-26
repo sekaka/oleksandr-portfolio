@@ -51,7 +51,7 @@ export function BlogPost({ article }: BlogPostProps) {
           url: window.location.href,
         });
       } catch (error) {
-        console.log('Error sharing:', error);
+        // Silently handle sharing errors
       }
     } else {
       // Fallback to copying URL

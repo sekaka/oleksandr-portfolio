@@ -1,13 +1,26 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseAdmin } from '@/lib/supabase-server';
 
-// POST /api/create-admin - Create admin user (run once)
+// POST /api/create-admin - Create admin user (run once in development only)
 export async function POST() {
+  // Only allow in development environment
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({
+      error: 'Admin creation is not allowed in production. Use direct database access or CLI tools.'
+    }, { status: 403 });
+  }
+
   try {
     const supabase = await createSupabaseAdmin();
 
-    const adminEmail = 'admin@oleksandr.dev';
-    const adminPassword = 'your-secure-password-123';
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@oleksandr.dev';
+    const adminPassword = process.env.ADMIN_PASSWORD;
+
+    if (!adminPassword) {
+      return NextResponse.json({
+        error: 'Admin password not configured. Set ADMIN_PASSWORD environment variable.'
+      }, { status: 500 });
+    }
 
     // First check if user already exists
     const { data: existingUsers } = await supabase.auth.admin.listUsers();
@@ -16,11 +29,6 @@ export async function POST() {
     if (existingUser) {
       return NextResponse.json({
         message: 'Admin user already exists',
-        credentials: {
-          email: adminEmail,
-          password: adminPassword,
-          note: 'Use these credentials to log in'
-        },
         user: {
           id: existingUser.id,
           email: existingUser.email,
@@ -68,11 +76,6 @@ export async function POST() {
 
     return NextResponse.json({
       message: 'Admin user created successfully',
-      credentials: {
-        email: adminEmail,
-        password: adminPassword,
-        note: 'Use these credentials to log in'
-      },
       user: {
         id: authUser.user.id,
         email: authUser.user.email,

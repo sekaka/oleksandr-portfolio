@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseAdmin } from '@/lib/supabase-server';
+import { requireAdmin, createAuthResponse } from '@/lib/auth-middleware';
 import DOMPurify from 'isomorphic-dompurify';
 
 interface RouteParams {
@@ -45,6 +46,12 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
 // PUT /api/articles/[id] - Update article
 export async function PUT(request: NextRequest, { params }: RouteParams) {
+  // Check authentication
+  const { user, error } = await requireAdmin(request);
+  if (error || !user) {
+    return createAuthResponse(error || 'Admin access required', 401);
+  }
+
   try {
     const { id } = await params;
     const supabase = await createSupabaseAdmin();
@@ -157,6 +164,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
 // DELETE /api/articles/[id] - Delete article
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
+  // Check authentication
+  const { user, error } = await requireAdmin(request);
+  if (error || !user) {
+    return createAuthResponse(error || 'Admin access required', 401);
+  }
+
   try {
     const { id } = await params;
     const supabase = await createSupabaseAdmin();

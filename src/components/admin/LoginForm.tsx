@@ -117,14 +117,15 @@ export function LoginForm() {
             </div>
           )}
 
-          {/* Demo Credentials */}
-          <div className="p-3 bg-primary/5 border border-primary/20 rounded-md">
-            <p className="text-xs text-primary font-medium mb-1">Admin Credentials:</p>
-            <p className="text-xs text-muted-foreground">
-              Email: admin@oleksandr.dev<br />
-              Password: your-secure-password-123
-            </p>
-          </div>
+          {/* Development Notice */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-md dark:bg-amber-950 dark:border-amber-800">
+              <p className="text-xs text-amber-800 dark:text-amber-200 font-medium mb-1">Development Mode</p>
+              <p className="text-xs text-amber-700 dark:text-amber-300">
+                Use your configured admin credentials to access the dashboard.
+              </p>
+            </div>
+          )}
 
           {/* Submit Button */}
           <Button
