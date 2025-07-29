@@ -4,6 +4,7 @@ import "./globals.css";
 import { generateMetadata } from "@/lib/seo";
 import { ThemeProvider } from "@/components/common/ThemeProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,6 +41,9 @@ export default function RootLayout({
             </div>
           </AuthProvider>
         </ThemeProvider>
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+        )}
       </body>
     </html>
   );

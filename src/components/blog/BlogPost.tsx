@@ -8,6 +8,7 @@ import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
 import DOMPurify from 'dompurify';
 import type { Article } from '@/types/article';
+import { trackBlogView, trackBlogShare } from '@/lib/analytics';
 
 interface BlogPostProps {
   article: Article;
@@ -17,7 +18,10 @@ export function BlogPost({ article }: BlogPostProps) {
   useEffect(() => {
     // Apply highlight.js to all code blocks
     hljs.highlightAll();
-  }, [article.content]);
+    
+    // Track blog post view
+    trackBlogView(article.slug, article.title);
+  }, [article.content, article.slug, article.title]);
 
   const formatDate = (date: Date | string | null) => {
     if (!date) return 'No date';
@@ -50,12 +54,14 @@ export function BlogPost({ article }: BlogPostProps) {
           text: article.excerpt,
           url: window.location.href,
         });
+        trackBlogShare(article.slug, article.title, 'native_share');
       } catch (error) {
         // Silently handle sharing errors
       }
     } else {
       // Fallback to copying URL
       navigator.clipboard.writeText(window.location.href);
+      trackBlogShare(article.slug, article.title, 'copy_link');
       // You might want to show a toast notification here
     }
   };
@@ -99,7 +105,7 @@ export function BlogPost({ article }: BlogPostProps) {
                 </span>
                 <span className="flex items-center gap-2">
                   <Eye className="h-4 w-4" />
-                  {formatViews(article.view_count)} views
+                  {formatViews(article.view_count || 0)} views
                 </span>
               </div>
               
